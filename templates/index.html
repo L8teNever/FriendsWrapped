@@ -59,59 +59,98 @@
             border-radius: 50%;
             filter: blur(80px);
             z-index: 1;
-            opacity: 0.6;
-            animation: move 20s infinite alternate;
+            opacity: 0.4;
+            animation: move 25s infinite alternate ease-in-out;
         }
 
         @keyframes move {
+            0% {
+                transform: translate(-20%, -20%) scale(1) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(10%, 15%) scale(1.3) rotate(90deg);
+            }
+
+            100% {
+                transform: translate(25%, -10%) scale(1.1) rotate(180deg);
+            }
+        }
+
+        /* Floating Background Text/Numbers */
+        .bg-floating-text {
+            position: absolute;
+            font-size: 40dvh;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.03);
+            z-index: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            line-height: 1;
+            animation: float-text 15s infinite alternate ease-in-out;
+        }
+
+        @keyframes float-text {
             from {
-                transform: translate(-20%, -20%) scale(1);
+                transform: translate(-5%, -5%) rotate(-5deg);
             }
 
             to {
-                transform: translate(20%, 20%) scale(1.2);
+                transform: translate(5%, 5%) rotate(5deg);
+            }
+        }
+
+        /* Gradient Shift Animation */
+        .gradient-animate {
+            background-size: 200% 200%;
+            animation: gradient-shift 10s infinite alternate ease-in-out;
+        }
+
+        @keyframes gradient-shift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
             }
         }
 
         /* Gradients */
         .wrapped-gradient-1 {
-            background: #1db954;
+            background: linear-gradient(-45deg, #1db954, #191414, #1db954);
         }
 
         .wrapped-gradient-birthday {
-            background: #8e2de2;
+            background: linear-gradient(135deg, #8e2de2, #4a00e0, #8e2de2);
         }
 
         .wrapped-gradient-stats {
-            background: #ff416c;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b, #ff416c);
         }
 
         .wrapped-gradient-chat {
-            background: #00b4db;
-        }
-
-        .wrapped-gradient-whatsapp {
-            background: #111b21;
+            background: linear-gradient(225deg, #00b4db, #0083b0, #00b4db);
         }
 
         .wrapped-gradient-thennow {
-            background: #2af598;
+            background: linear-gradient(135deg, #2af598, #009efd, #2af598);
         }
 
         .wrapped-gradient-funny {
-            background: #FFD200;
+            background: linear-gradient(45deg, #FFD200, #F7971E, #FFD200);
         }
 
         .wrapped-gradient-music {
-            background: #4facfe;
+            background: linear-gradient(135deg, #4facfe, #00f2fe, #4facfe);
         }
 
         .wrapped-gradient-future {
-            background: #667eea;
+            background: linear-gradient(225deg, #667eea, #764ba2, #667eea);
         }
 
         .wrapped-gradient-profile {
-            background: #f953c6;
+            background: linear-gradient(45deg, #f953c6, #b91d73, #f953c6);
         }
 
         .wrapped-gradient-4 {
@@ -215,23 +254,31 @@
             transition: width 0.5s ease-out;
         }
 
-        /* WhatsApp Pop Animation */
-        .wa-bubble {
-            position: relative;
-            background: #202c33;
-            border-radius: 0 16px 16px 16px;
-            padding: 12px 16px;
-            max-width: 85%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            margin-bottom: 12px;
-            transform: translateX(-20px);
+        /* WhatsApp Cards Animation */
+        .wa-card {
             opacity: 0;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.8s cubic-bezier(0.17, 0.55, 0.55, 1);
         }
 
-        section.active .wa-bubble {
-            transform: translateX(0);
+        .reveal.active .wa-card {
             opacity: 1;
+            transform: translateX(0) !important;
+        }
+
+        .stagger-5 {
+            transition-delay: 1.0s !important;
+        }
+
+        .stagger-6 {
+            transition-delay: 1.2s !important;
+        }
+
+        .stagger-7 {
+            transition-delay: 1.4s !important;
+        }
+
+        .stagger-8 {
+            transition-delay: 1.6s !important;
         }
 
         .swipe-container {
@@ -480,60 +527,76 @@
     </section>
 
     <!-- 2. Geburtstag -->
-    <section id="birthday-section" class="wrapped-gradient-birthday" data-index="1">
-        <div class="blob w-80 h-80 bg-purple-400 top-0 right-0"></div>
-        <div class="big-number -left-8 top-10 rotate-12 count-up text-white text-white"
-            data-target="{{ config.get('birthday_age', '19') }}">0</div>
+    <!-- 2. Happy Birthday -->
+    {% if config.get('show_birthday', 'true') == 'true' %}
+    <section class="wrapped-gradient-birthday gradient-animate" data-index="1">
+        <div class="bg-floating-text opacity-5 select-none stagger-1" style="left: -10%; top: 10%;">{{
+            config.get('birthday_age', '19') }}</div>
+        <div class="blob w-72 h-72 bg-pink-300 top-10 right-10"></div>
+        <div class="blob w-96 h-96 bg-purple-600 bottom-0 left-[-10%]" style="animation-delay: -8s"></div>
         <div class="relative z-10 text-center px-6 reveal">
-            <div class="mb-6 inline-block p-4 bg-white/10 rounded-full backdrop-blur-xl stagger-1"><i
-                    data-lucide="party-popper" class="w-10 h-10 text-yellow-300"></i></div>
-            <h2 class="text-2xl font-black italic uppercase opacity-80 mb-2 stagger-2 text-white">{{
-                config.get('birthday_title', 'Happy Birthday!') }}</h2>
-            <h3
-                class="text-6xl md:text-9xl font-black mb-8 tracking-tighter leading-none uppercase text-white stagger-3">
-                ZUM <span class="count-up" data-target="{{ config.get('birthday_age', '19') }}">0</span>.</h3>
-            <p class="text-lg md:text-2xl opacity-90 font-bold max-w-md mx-auto stagger-4 text-white">{{
-                config.get('birthday_text', 'Heute feiern wir dich und all die Jahre, die wir uns schon kennen!') }}</p>
-        </div>
-        <div class="curve-divider curve-bottom">
-            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
-                class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 120C480 20 960 20 1440 120V120H0V120Z" fill="#ff416c" />
-                <path d="M0 0C480 100 960 100 1440 0V120H0V0Z" fill="#ff416c" />
-            </svg>
-        </div>
-    </section>
-
-    <!-- 3. Statistik (Tage) -->
-    <section class="wrapped-gradient-stats" data-index="2">
-        <div class="blob w-96 h-96 bg-red-400 bottom-0 left-0"></div>
-        <div class="relative z-10 text-center px-6 reveal">
-            <h2 class="text-3xl md:text-5xl font-black mb-10 italic uppercase tracking-tighter stagger-1 text-white">
-                {{ config.get('stats_title', 'Unsere Zeit') }}</h2>
-            <div class="glass p-8 md:p-14 max-w-lg mx-auto transform -rotate-1 stagger-2">
-                <p class="text-sm md:text-lg font-black opacity-70 uppercase tracking-widest mb-4">WIR KENNEN UNS SEIT
-                    {{ config.get('years_count', '5') }} JAHREN</p>
-                <h3 class="text-6xl md:text-9xl font-black mb-4 tracking-tighter text-white text-white">
-                    <span class="count-up" data-target="{{ config.get('days_count', '1825') }}">0</span>
-                </h3>
-                <p class="text-xs md:text-base font-black opacity-60 uppercase tracking-[0.2em]">{{
-                    config.get('stats_subtitle', 'Tage voller Erinnerungen') }}</p>
+            <h2 class="text-4xl md:text-7xl font-black mb-6 italic uppercase tracking-tighter stagger-1 text-white">
+                {{ config.get('birthday_title', 'HAPPY BIRTHDAY!') }}</h2>
+            <div
+                class="inline-block px-10 py-4 bg-white/20 backdrop-blur-xl rounded-full mb-8 stagger-2 border border-white/30 text-white">
+                <span class="text-3xl font-black">{{ config.get('birthday_age', '19') }}.</span>
             </div>
+            <p class="text-lg md:text-2xl font-bold opacity-80 max-w-xl mx-auto stagger-3 leading-relaxed text-white">
+                {{ config.get('birthday_text', 'Heute feiern wir dich und all die Jahre, die wir uns schon kennen!') }}
+            </p>
         </div>
         <div class="curve-divider curve-bottom">
-            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
-                class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C360 120 1080 120 1440 0V120H0V0Z" fill="#0083b0" />
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
+                <path fill="#ff416c" fill-opacity="1"
+                    d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,165.3C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                </path>
             </svg>
         </div>
     </section>
+    {% endif %}
 
-    <!-- 4. Chat-Statistiken -->
-    <section class="wrapped-gradient-chat" data-index="3">
+    <!-- 3. Overall Stats -->
+    {% if config.get('show_stats', 'true') == 'true' %}
+    <section class="wrapped-gradient-stats gradient-animate" data-index="2">
+        <div class="bg-floating-text" style="right: -20%; bottom: 0%;">STATS</div>
+        <div class="blob w-96 h-96 bg-white/10 left-[-10%] top-10"></div>
+        <div class="relative z-10 reveal text-center px-6">
+            <h2 class="text-5xl md:text-9xl font-black mb-4 tracking-tighter italic uppercase stagger-1 text-white">
+                {{ config.get('stats_title', 'UNSERE ZEIT') }}</h2>
+            <div class="flex items-center justify-center gap-4 md:gap-8 mb-8 stagger-2 text-white">
+                <div class="text-center">
+                    <span class="text-6xl md:text-8xl font-black count-up"
+                        data-target="{{ config.get('years_count', '5') }}">0</span>
+                    <p class="text-[10px] font-bold uppercase opacity-50">Jahre</p>
+                </div>
+                <div class="w-px h-16 bg-white/20"></div>
+                <div class="text-center">
+                    <span class="text-6xl md:text-8xl font-black count-up"
+                        data-target="{{ config.get('days_count', '1825') }}">0</span>
+                    <p class="text-[10px] font-bold uppercase opacity-50">Tage</p>
+                </div>
+            </div>
+            <p class="text-base md:text-xl font-bold opacity-60 italic stagger-3 text-white">
+                {{ config.get('stats_subtitle', 'Tage voller Erinnerungen und Abenteuer') }}</p>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
+                <path fill="#00b4db" fill-opacity="1"
+                    d="M0,192L60,197.3C120,203,240,213,360,192C480,171,600,117,720,117.3C840,117,960,171,1080,186.7C1200,203,1320,181,1380,170.7L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
+                </path>
+            </svg>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- 4. Chat Stats -->
+    {% if config.get('show_whatsapp', 'true') == 'true' %}
+    <section class="wrapped-gradient-chat gradient-animate" data-index="3">
+        <div class="bg-floating-text" style="left: -10%; top: 20%;">CHAT</div>
         <div class="blob w-72 h-72 bg-blue-300 top-10 left-10"></div>
-        <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl text-white text-white">
+        <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl text-white">
             <h2
-                class="text-3xl md:text-5xl font-black mb-12 italic uppercase tracking-tighter stagger-1 text-white flex items-center justify-center gap-4">
+                class="text-3xl md:text-5xl font-black mb-12 italic uppercase tracking-tighter stagger-1 flex items-center justify-center gap-4">
                 {{ config.get('chat_stats_title', 'Einfach unzertrennlich') }}
             </h2>
             <div class="flex flex-wrap justify-center gap-6 stagger-2">
@@ -543,11 +606,10 @@
                 {% if parts|length >= 3 %}
                 <div class="glass p-8 hover:scale-105 transition-transform w-full md:w-72">
                     <i data-lucide="{{ parts[0].strip() }}" class="w-8 h-8 mb-4 mx-auto opacity-50"></i>
-                    <h3 class="text-4xl font-black mb-2 text-white">
+                    <h3 class="text-4xl font-black mb-2">
                         <span class="count-up" data-target="{{ parts[1].strip() }}">0</span>
                     </h3>
-                    <p class="text-[10px] font-black uppercase opacity-60 text-white text-white">{{ parts[2].strip() }}
-                    </p>
+                    <p class="text-[10px] font-black uppercase opacity-60">{{ parts[2].strip() }}</p>
                 </div>
                 {% endif %}
                 {% endif %}
@@ -555,46 +617,64 @@
             </div>
         </div>
         <div class="curve-divider curve-bottom">
-            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
-                class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C360 120 1080 120 1440 0V120H0V0Z" fill="#111b21" />
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
+                <path fill="#111b21" fill-opacity="1"
+                    d="M0,64L48,80C96,96,192,128,288,128C384,128,480,96,576,106.7C672,117,768,171,864,176C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                </path>
             </svg>
         </div>
     </section>
+    {% endif %}
 
-    <!-- 5. Top 5 WhatsApp Nachrichten -->
-    <section class="wrapped-gradient-whatsapp" data-index="4">
-        <div class="relative z-10 w-full max-w-lg px-6 flex flex-col items-center text-white">
-            <h2
-                class="text-2xl md:text-4xl font-black mb-10 text-center italic uppercase tracking-tighter text-white reveal stagger-1">
-                {{ config.get('wa_title', 'Deine legendären Nachrichten')|safe }}</h2>
-            <div class="w-full flex flex-col gap-4">
-                <div class="wa-bubble self-start text-white" style="transition-delay: 0.1s">
-                    <p class="text-sm">"{{ config.get('wa_msg_1', 'Hahahah ich kann nicht mehr 😂') }}"</p>
+    <!-- 5. WhatsApp Cards -->
+    {% if config.get('show_whatsapp', 'true') == 'true' %}
+    <section class="bg-[#111b21] overflow-hidden" data-index="4">
+        <div class="blob w-96 h-96 bg-emerald-500/10 right-[-10%] top-[-10%]"></div>
+        <div class="relative z-10 w-full max-w-lg px-6 reveal">
+            <div class="mb-12 text-center stagger-1">
+                <div class="inline-block p-1 bg-white/10 rounded-2xl mb-4 backdrop-blur-xl border border-white/20">
+                    <div class="px-4 py-2 bg-emerald-500/20 rounded-xl text-emerald-400 font-bold text-xs uppercase">
+                        WhatsApp Wrapped</div>
                 </div>
-                <div class="wa-bubble self-start translate-x-4 text-white" style="transition-delay: 0.3s">
-                    <p class="text-sm">"{{ config.get('wa_msg_2', 'Bin in 5 Minuten da! (Versprochen)') }}"</p>
+                <h2 class="text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-white">
+                    {{ config.get('wa_title', 'DEINE LEGENDÄREN NACHRICHTEN') }}</h2>
+            </div>
+
+            <div class="space-y-4">
+                {% set wa_msgs = [config.get('wa_msg_1'), config.get('wa_msg_2'), config.get('wa_msg_3'),
+                config.get('wa_msg_4'), config.get('wa_msg_5')] %}
+                {% for msg in wa_msgs %}
+                {% if msg %}
+                <div class="wa-card bg-[#202c33] p-6 rounded-[2rem] border border-white/5 shadow-2xl stagger-{{ loop.index + 1 }} hover:bg-[#2a3942] transition-colors group flex items-start gap-4"
+                    style="transform: translateX({{ '30px' if loop.index % 2 == 0 else '-30px' }})">
+                    <div class="flex-1">
+                        <p
+                            class="text-lg font-medium text-white group-hover:scale-105 transition-transform duration-500">
+                            "{{ msg }}"</p>
+                        <div class="mt-4 flex items-center justify-end opacity-40">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold mr-2 text-white">22:31</span>
+                                <i data-lucide="check-check" class="w-3 h-3 text-[#53bdeb]"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="wa-bubble self-start text-white" style="transition-delay: 0.5s">
-                    <p class="text-sm">"{{ config.get('wa_msg_3', 'Was essen wir heute? Ich sterbe 🍕') }}"</p>
-                </div>
-                <div class="wa-bubble self-start -translate-x-2 text-white" style="transition-delay: 0.7s">
-                    <p class="text-sm">"{{ config.get('wa_msg_4', 'Glaub nicht was gerade passiert ist...') }}"</p>
-                </div>
-                <div class="wa-bubble self-start translate-x-6 text-white" style="transition-delay: 0.9s">
-                    <p class="text-sm">"{{ config.get('wa_msg_5', 'Love you Bestie! 💖✨') }}"</p>
-                </div>
+                {% endif %}
+                {% endfor %}
             </div>
         </div>
-        <div class="curve-divider curve-bottom">
-            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
-                class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C360 120 1080 120 1440 0V120H0V0Z" fill="#2af598" />
+        <div class="curve-divider curve-bottom text-white">
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
+                <path fill="#2af598" fill-opacity="1"
+                    d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,213.3C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                </path>
             </svg>
         </div>
     </section>
+    {% endif %}
 
     <!-- 6. Damals vs Heute -->
+    {% if config.get('show_development', 'true') == 'true' %}
     <section class="wrapped-gradient-thennow" data-index="5">
         <div class="blob w-80 h-80 bg-cyan-200 right-[-10%] bottom-0"></div>
         <div class="relative z-10 w-full flex flex-col items-center reveal h-full py-12 text-white">
@@ -646,8 +726,10 @@
             </svg>
         </div>
     </section>
+    {% endif %}
 
     <!-- 7. Meme-Galerie (Anklickbar & Staggered) -->
+    {% if config.get('show_chaos', 'true') == 'true' %}
     <section class="wrapped-gradient-funny" data-index="6">
         <div class="relative z-10 w-full max-w-5xl px-6 text-black">
             <div class="reveal text-center">
@@ -688,124 +770,145 @@
             </svg>
         </div>
     </section>
+    {% endif %}
 
     <!-- 8. Musik -->
-    <section class="wrapped-gradient-music" data-index="7">
+    {% if config.get('show_music', 'true') == 'true' %}
+    <section class="wrapped-gradient-music gradient-animate" data-index="7">
+        <div class="bg-floating-text" style="right: -10%; top: 10%;">MUSIC</div>
         <div class="blob w-96 h-96 bg-cyan-200 top-[-10%] left-[-10%]"></div>
         <div class="relative z-10 text-center px-6 reveal">
             <h2
-                class="text-3xl md:text-5xl font-black mb-12 italic uppercase text-white tracking-tighter stagger-1 text-white">
+                class="text-4xl md:text-7xl font-black mb-12 italic uppercase text-white tracking-tighter stagger-1 text-white">
                 {{ config.get('music_title', 'Euer All-Time Favorit') }}</h2>
-            <div class="glass p-8 inline-block max-w-[300px] w-full text-left stagger-2">
+            <div class="glass p-10 inline-block max-w-[340px] w-full text-left stagger-2 group">
                 <div
-                    class="record-spin mb-8 mx-auto w-40 h-40 rounded-full bg-zinc-900 border-[8px] border-zinc-800 flex items-center justify-center relative shadow-2xl">
-                    <div class="w-8 h-8 rounded-full bg-black border-2 border-zinc-700 z-10 text-white text-white">
-                    </div>
-                    <img src="{{ config.get('song_cover', 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400') }}"
-                        class="absolute inset-3 rounded-full opacity-40 object-cover">
+                    class="record-spin mb-10 mx-auto w-48 h-48 rounded-full bg-zinc-900 border-[10px] border-zinc-800 flex items-center justify-center relative shadow-2xl group-hover:scale-110 transition-transform duration-700">
+                    <div class="w-10 h-10 rounded-full bg-black border-2 border-zinc-700 z-10"></div>
+                    <img src="{{ config.get('song_cover', '') }}"
+                        class="absolute inset-4 rounded-full opacity-40 object-cover">
                 </div>
-                <p class="text-[10px] font-black uppercase text-cyan-200 tracking-widest mb-1 stagger-3 text-white">{{
-                    config.get('song_artist', 'Dauerschleife') }}</p>
-                <h3
-                    class="text-2xl font-black italic tracking-tighter text-white leading-tight stagger-4 text-white text-white">
-                    {{ config.get('song_title', 'Friendship Anthem') }}</h3>
+                <div class="space-y-1">
+                    <p class="text-[10px] font-black uppercase text-cyan-200 tracking-[0.3em] stagger-3">{{
+                        config.get('song_artist', 'Dauerschleife') }}</p>
+                    <h3 class="text-3xl font-black italic tracking-tighter text-white leading-tight stagger-4">{{
+                        config.get('song_title', 'Friendship Anthem') }}</h3>
+                </div>
             </div>
         </div>
         <div class="curve-divider curve-bottom">
-            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
-                class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C480 100 960 100 1440 0V120H0V0Z" fill="#000000" />
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
+                <path fill="#000000" fill-opacity="1"
+                    d="M0,256L60,240C120,224,240,192,360,197.3C480,203,600,245,720,245.3C840,245,960,203,1080,181.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
+                </path>
             </svg>
         </div>
     </section>
+    {% endif %}
 
     <!-- 9. Paris Trip -->
-    <section id="trip1" class="bg-black" data-index="8">
-        <div class="trip-bg-overlay"
-            style="background-image: url('{{ config.get('trip_bg', 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200') }}');">
+    {% if config.get('show_highlights', 'true') == 'true' %}
+    <section id="trip1" class="bg-black gradient-animate" data-index="8">
+        <div class="bg-floating-text" style="left: 0%; top: 30%;">TRAVEL</div>
+        <div class="trip-bg-overlay" style="background-image: url('{{ config.get('trip_bg', '') }}');">
         </div>
         <div class="relative z-10 w-full px-6 flex flex-col lg:flex-row items-center gap-10 max-w-6xl reveal">
             <div class="w-full lg:w-1/2 stagger-1 text-white">
-                <div class="glass p-8 md:p-12">
-                    <span
-                        class="text-pink-500 font-black uppercase text-[10px] tracking-widest mb-3 block italic text-pink-500">{{
+                <div class="glass p-10 md:p-14">
+                    <span class="text-pink-400 font-black uppercase text-[10px] tracking-[0.4em] mb-4 block italic">{{
                         config.get('highlight_label', 'Das Highlight') }}</span>
-                    <h3
-                        class="text-4xl md:text-6xl font-black mb-5 italic uppercase text-white leading-none text-white">
-                        {{ config.get('trip_city', 'Paris Vibes') }}</h3>
+                    <h3 class="text-5xl md:text-7xl font-black mb-8 italic uppercase text-white leading-none">
+                        {{ config.get('trip_city', 'Abenteuer') }}</h3>
                     <button onclick="openGallery('paris')"
-                        class="bg-white text-black px-6 py-3 rounded-full font-black uppercase text-xs flex items-center gap-2 active:scale-95 transition-all shadow-xl"><i
-                            data-lucide="images" class="w-4 h-4 text-black text-black"></i> Galerie</button>
+                        class="bg-white text-black px-8 py-4 rounded-full font-black uppercase text-xs flex items-center gap-3 active:scale-95 transition-all shadow-2xl hover:bg-pink-50 transition-colors"><i
+                            data-lucide="images" class="w-5 h-5"></i> Galerie ansehen</button>
                 </div>
             </div>
             <div class="w-full lg:w-1/2 flex justify-center stagger-2">
                 <div class="relative group cursor-pointer" onclick="openGallery('paris')">
-                    <img src="{{ config.get('trip_bg', 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800') }}"
-                        class="rounded-[2.5rem] shadow-2xl border-[6px] border-white/10 object-cover aspect-square max-w-[240px] md:max-w-md rotate-2 transition-transform duration-500 group-hover:rotate-0">
-                    <div class="absolute -bottom-4 -right-4 bg-pink-500 p-3 rounded-full shadow-lg rotate-12"><i
-                            data-lucide="heart" class="text-white w-5 h-5 text-white"></i></div>
+                    <div
+                        class="absolute -inset-4 bg-pink-500 blur-2xl opacity-20 group-hover:opacity-40 transition duration-700">
+                    </div>
+                    <img src="{{ config.get('trip_bg', '') }}"
+                        class="relative rounded-[3rem] shadow-2xl border-8 border-white/10 object-cover aspect-square max-w-[280px] md:max-w-md rotate-3 transition-transform duration-700 group-hover:rotate-0 group-hover:scale-105">
+                    <div
+                        class="absolute -bottom-6 -right-6 bg-pink-500 p-5 rounded-2xl shadow-2xl rotate-12 group-hover:rotate-0 transition-transform">
+                        <i data-lucide="heart" class="text-white w-6 h-6 fill-current"></i>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="curve-divider curve-bottom">
-            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
-                class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C720 120 1440 0 1440 0V120H0V0Z" fill="#667eea" />
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
+                <path fill="#667eea" fill-opacity="1"
+                    d="M0,160L48,144C96,128,192,96,288,106.7C384,117,480,171,576,186.7C672,203,768,181,864,154.7C960,128,1056,96,1152,90.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                </path>
             </svg>
         </div>
     </section>
+    {% endif %}
 
     <!-- 10. Bucket List -->
-    <section class="wrapped-gradient-future" data-index="9">
+    {% if config.get('show_bucketlist', 'true') == 'true' %}
+    <section class="wrapped-gradient-future gradient-animate" data-index="9">
+        <div class="bg-floating-text" style="right: -10%; top: 10%;">GOALS</div>
         <div class="blob w-72 h-72 bg-blue-400 left-[-5%] top-[-5%]"></div>
         <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl stagger-1 text-white">
             <h2
-                class="text-4xl md:text-7xl font-black italic uppercase mb-12 tracking-tighter leading-none text-white text-white">
+                class="text-5xl md:text-8xl font-black italic uppercase mb-12 tracking-tighter leading-none text-white text-white">
                 {{ config.get('bucket_title', 'Was wir noch erleben') }}</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="glass p-6 flex items-center gap-4 text-left stagger-2">
-                    <div class="bg-white/20 p-4 rounded-2xl"><i data-lucide="map" class="text-white text-white"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div
+                    class="glass p-8 flex items-center gap-6 text-left stagger-2 group hover:bg-white/20 transition-colors">
+                    <div class="bg-white/20 p-5 rounded-[2rem] group-hover:rotate-12 transition-transform"><i
+                            data-lucide="map" class="w-8 h-8 text-white"></i>
                     </div>
                     <div>
-                        <p class="text-[10px] font-black opacity-50 uppercase text-white">Ziel #1</p>
-                        <p class="text-xl font-bold italic text-white text-white">Nächster Trip</p>
+                        <p class="text-[10px] font-black opacity-50 uppercase text-white tracking-widest">Ziel #1</p>
+                        <p class="text-2xl font-black italic text-white">Nächster Trip</p>
                     </div>
                 </div>
-                <div class="glass p-6 flex items-center gap-4 text-left stagger-3">
-                    <div class="bg-white/20 p-4 rounded-2xl"><i data-lucide="heart" class="text-white text-white"></i>
+                <div
+                    class="glass p-8 flex items-center gap-6 text-left stagger-3 group hover:bg-white/20 transition-colors">
+                    <div class="bg-white/20 p-5 rounded-[2rem] group-hover:rotate-12 transition-transform"><i
+                            data-lucide="heart" class="w-8 h-8 text-white"></i>
                     </div>
                     <div>
-                        <p class="text-[10px] font-black opacity-50 uppercase text-white">Motto</p>
-                        <p class="text-xl font-bold italic text-white text-white">Immer da sein</p>
+                        <p class="text-[10px] font-black opacity-50 uppercase text-white tracking-widest">Motto</p>
+                        <p class="text-2xl font-black italic text-white">Immer da sein</p>
                     </div>
                 </div>
             </div>
         </div>
         <div class="curve-divider curve-bottom">
-            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
-                class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C720 100 1440 0 1440 0V120H0V0Z" fill="#b91d73" />
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
+                <path fill="#000000" fill-opacity="1"
+                    d="M0,128L48,144C96,160,192,192,288,208C384,224,480,224,576,213.3C672,203,768,181,864,186.7C960,192,1056,224,1152,213.3C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                </path>
             </svg>
         </div>
     </section>
+    {% endif %}
 
     <!-- 11. Post-it Wall -->
+    {% if config.get('show_postits', 'true') == 'true' %}
     <section class="bg-zinc-950" data-index="10">
-        <div class="blob w-80 h-80 bg-yellow-400/20 left-[-10%] top-[-10%]"></div>
+        <div class="bg-floating-text" style="left: -10%; bottom: 10%;">WALL</div>
+        <div class="blob w-80 h-80 bg-yellow-400/10 left-[-10%] top-[-10%]"></div>
         <div class="relative z-10 w-full max-w-5xl px-6 py-20 text-center reveal">
             <h2 class="text-3xl md:text-6xl font-black mb-16 italic uppercase tracking-tighter text-white stagger-1">
                 {{ config.get('postits_title', 'Was ich an dir schätze') }}</h2>
-            <div class="flex flex-wrap justify-center gap-8 stagger-2">
+            <div class="flex flex-wrap justify-center gap-10 stagger-2">
                 {% set colors = ['postit-yellow', 'postit-pink', 'postit-blue', 'postit-green'] %}
                 {% for note in config.get('postits_content', '').split(',') %}
                 {% if note %}
-                <div class="postit {{ colors[loop.index0 % 4] }} shadow-2xl cursor-pointer"
+                <div class="postit {{ colors[loop.index0 % 4] }} shadow-2xl cursor-pointer hover:scale-110 active:scale-95 transition-all"
                     onclick="this.classList.add('wiggle-animation'); setTimeout(() => this.classList.remove('wiggle-animation'), 500)">
-                    <p class="text-black font-bold italic text-base md:text-lg leading-tight select-none">{{
+                    <p class="text-black font-black italic text-lg md:text-xl leading-tight select-none">{{
                         note.strip() }}</p>
                     <!-- Pin effect -->
                     <div
-                        class="absolute top-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-red-600 rounded-full shadow-inner opacity-40">
+                        class="absolute top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-600 rounded-full shadow-inner opacity-60">
                     </div>
                 </div>
                 {% endif %}
@@ -813,49 +916,59 @@
             </div>
         </div>
         <div class="curve-divider curve-bottom">
-            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
-                class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C720 100 1440 0 1440 0V120H0V0Z" fill="#f953c6" />
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
+                <path fill="#f953c6" fill-opacity="1"
+                    d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,197.3C672,192,768,128,864,128C960,128,1056,192,1152,208C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                </path>
             </svg>
         </div>
     </section>
+    {% endif %}
 
     <!-- 12. Reveal Charakter -->
-    <section class="wrapped-gradient-profile" data-index="11" id="profile-reveal-section">
-        <div class="blob w-96 h-96 bg-white top-0 right-[-10%]" style="opacity: 0.3"></div>
-        <div class="relative z-10 text-center px-6 reveal w-full max-w-md">
-            <div id="analyzing-state" class="mb-10 transition-opacity duration-500">
-                <p class="text-sm font-black uppercase tracking-[0.4em] opacity-70 mb-4 text-white text-white">
-                    {{ config.get('analyzing_text', 'Analysiere Freundschaft...') }}</p>
-                <div class="flex justify-center gap-1 text-white text-white">
-                    <div class="w-2 h-2 bg-white rounded-full animate-bounce"></div>
-                    <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                    <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+    {% if config.get('show_character', 'true') == 'true' %}
+    <section class="wrapped-gradient-profile gradient-animate" data-index="11" id="profile-reveal-section">
+        <div class="bg-floating-text" style="right: -10%; top: 20%;">ULTIMATE</div>
+        <div class="blob w-96 h-96 bg-white/20 top-0 right-[-10%]"></div>
+        <div class="relative z-10 text-center px-6 reveal w-full max-w-lg">
+            <div id="analyzing-state" class="mb-14 transition-opacity duration-500">
+                <div
+                    class="w-24 h-24 border-8 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-8 shadow-2xl">
                 </div>
+                <p class="text-lg font-black uppercase tracking-[0.5em] opacity-80 text-white italic animate-pulse">
+                    {{ config.get('analyzing_text', 'Extracting Vibes...') }}
+                </p>
             </div>
-            <div class="profile-card glass p-10 flex flex-col items-center relative overflow-hidden">
-                <div class="scan-line"></div>
-                <div id="reveal-content" class="result-content flex flex-col items-center w-full">
-                    <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mb-8 shadow-2xl"><i
-                            data-lucide="user-check" class="w-12 h-12 text-white text-white"></i></div>
-                    <h2 class="text-xs font-black uppercase tracking-widest text-pink-200 mb-2">{{
-                        config.get('character_type_label', 'Charakter-Typ') }}</h2>
-                    <h3
-                        class="text-5xl font-black italic tracking-tighter text-white mb-6 uppercase text-white text-white">
-                        {{ config.get('character_type', 'Elite-Bestie') }}</h3>
-                    <div class="h-px w-full bg-white/10 mb-6"></div>
-                    <p class="text-lg font-bold italic leading-relaxed text-white text-white">Offizielles
-                        Ergebnis:<br>Einer der besten Freunde von {{ config.get('character_name', 'Simon') }}.</p>
+
+            <div id="character-result"
+                class="hidden opacity-0 flex flex-col items-center scale-75 blur-lg transition-all duration-1000">
+                <div class="relative mb-12">
+                    <div class="absolute -inset-10 bg-white blur-[100px] opacity-30 animate-pulse"></div>
+                    <div
+                        class="relative w-56 h-56 bg-white rounded-[3rem] rotate-6 flex items-center justify-center shadow-2xl overflow-hidden ring-4 ring-white/50 group hover:rotate-0 transition-transform duration-500">
+                        <div class="text-8xl group-hover:scale-125 transition-transform duration-500">👑</div>
+                    </div>
+                </div>
+                <span class="text-xs font-black uppercase tracking-[0.6em] mb-4 opacity-70 text-white">{{
+                    config.get('character_type_label', 'Charakter-Typ') }}</span>
+                <h2
+                    class="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white mb-10 leading-none">
+                    {{ config.get('character_type', 'Elite-Bestie') }}</h2>
+                <div class="px-8 py-3 bg-black/30 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <p class="text-3xl font-black text-white lowercase italic">#{{ config.get('character_name', 'Simon')
+                        }}Style</p>
                 </div>
             </div>
         </div>
         <div class="curve-divider curve-bottom">
-            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
-                class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C720 100 1440 0 1440 0V120H0V0Z" fill="#000000" />
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
+                <path fill="#000000" fill-opacity="1"
+                    d="M0,256L60,240C120,224,240,192,360,197.3C480,203,600,245,720,245.3C840,245,960,203,1080,181.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
+                </path>
             </svg>
         </div>
     </section>
+    {% endif %}
 
     <!-- 13. Finale -->
     <section class="wrapped-gradient-4" data-index="12">
@@ -865,27 +978,26 @@
                 <div id="gift-visual"
                     class="bg-white p-10 rounded-[3rem] shadow-2xl relative transition-all duration-300 hover:rotate-2">
                     <div id="gift-label"
-                        class="absolute -top-4 -right-4 bg-pink-600 text-white text-[10px] font-black px-4 py-2 rounded-full animate-bounce uppercase shadow-lg text-white text-white">
+                        class="absolute -top-4 -right-4 bg-pink-600 text-white text-[10px] font-black px-4 py-2 rounded-full animate-bounce uppercase shadow-lg">
                         Öffnen</div>
                     <i data-lucide="gift" class="w-16 h-16 text-pink-500 mx-auto"></i>
                 </div>
             </div>
             <div id="final-message" class="hidden">
                 <h2
-                    class="text-5xl md:text-[8rem] font-black mb-6 italic uppercase leading-none tracking-tighter text-white text-white">
+                    class="text-5xl md:text-[8rem] font-black mb-6 italic uppercase leading-none tracking-tighter text-white">
                     {{ config.get('final_msg_title', 'Bestie Forever.') }}</h2>
-                <p
-                    class="text-lg md:text-2xl opacity-90 font-bold max-w-xl mx-auto mb-10 text-white italic text-white text-white">
+                <p class="text-lg md:text-2xl opacity-90 font-bold max-w-xl mx-auto mb-10 text-white italic">
                     {{ config.get('final_msg_text', 'Danke für jeden einzelnen Moment. Du bist Familie. Auf ewig!') }}
                 </p>
-                <p class="text-3xl font-black italic uppercase text-pink-100 text-white text-white">{{
+                <p class="text-3xl font-black italic uppercase text-pink-100 text-white">{{
                     config.get('final_sender_name', 'Dein Bestie') }}</p>
             </div>
         </div>
     </section>
 
     <footer
-        class="py-12 bg-black text-center text-[10px] font-black tracking-[0.5em] opacity-30 uppercase flex items-center justify-center text-white text-white">
+        class="py-12 bg-black text-center text-[10px] font-black tracking-[0.5em] opacity-30 uppercase flex items-center justify-center text-white">
         Memory Wrapped • Unsere Story
     </footer>
 
@@ -956,11 +1068,22 @@
 
         function handleProfileReveal() {
             const analyzing = document.getElementById('analyzing-state');
+            const result = document.getElementById('character-result');
             setTimeout(() => {
                 analyzing.style.opacity = '0';
                 setTimeout(() => {
-                    analyzing.style.display = 'none';
-                    setTimeout(() => { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#f953c6', '#b91d73', '#ffffff'] }); }, 100);
+                    analyzing.classList.add('hidden');
+                    result.classList.remove('hidden');
+                    setTimeout(() => {
+                        result.classList.remove('opacity-0', 'scale-75', 'blur-lg');
+                        result.classList.add('opacity-1', 'scale-100', 'blur-0');
+                        confetti({
+                            particleCount: 150,
+                            spread: 70,
+                            origin: { y: 0.6 },
+                            colors: ['#f953c6', '#b91d73', '#ffffff']
+                        });
+                    }, 100);
                 }, 500);
             }, 2500);
         }

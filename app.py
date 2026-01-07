@@ -116,7 +116,16 @@ def init_db():
             'postits_content': 'Du bist die Beste!,Dein Lachen ist ansteckend,Beste Reisebegleitung,Immer ein offenes Ohr,Chaos-Queen (positiv!),Einfach du selbst ❤️',
             'final_msg_title': 'Bestie Forever.',
             'final_msg_text': 'Danke für jeden einzelnen Moment. Du bist Familie. Auf ewig!',
-            'final_sender_name': 'Deine [Dein Name]'
+            'final_sender_name': 'Deine [Dein Name]',
+            'show_birthday': 'true',
+            'show_stats': 'true',
+            'show_whatsapp': 'true',
+            'show_development': 'true',
+            'show_chaos': 'true',
+            'show_music': 'true',
+            'show_highlights': 'true',
+            'show_postits': 'true',
+            'show_character': 'true'
         }
         
         for key, val in defaults.items():

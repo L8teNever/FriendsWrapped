@@ -141,22 +141,24 @@
 
         <form method="POST" enctype="multipart/form-data" class="space-y-8">
             {% set categories = [
-            ('🚀 Basis-Einstellungen', 'zap', ['page_title', 'character_name', 'title_main', 'intro_text']),
-            ('🎂 Geburtstag', 'gift', ['birthday_title', 'birthday_age', 'birthday_text']),
-            ('📊 Highlights & Zahlen', 'bar-chart-2', ['stats_title', 'years_count', 'days_count', 'stats_subtitle',
-            'chat_stats_title', 'chat_stats_config']),
-            ('💬 WhatsApp Vibes', 'message-circle', ['wa_title', 'wa_msg_1', 'wa_msg_2', 'wa_msg_3', 'wa_msg_4',
-            'wa_msg_5']),
-            ('📸 Medien & Galerien', 'camera', ['img_then', 'img_now', 'trip_city', 'trip_bg', 'gallery_paris',
+            ('🚀 Basis-Einstellungen', 'zap', 'none', ['page_title', 'character_name', 'title_main', 'intro_text']),
+            ('🎂 Geburtstag', 'gift', 'show_birthday', ['birthday_title', 'birthday_age', 'birthday_text']),
+            ('📊 Highlights & Zahlen', 'bar-chart-2', 'show_stats', ['stats_title', 'years_count', 'days_count',
+            'stats_subtitle', 'chat_stats_title', 'chat_stats_config']),
+            ('💬 WhatsApp Vibes', 'message-circle', 'show_whatsapp', ['wa_title', 'wa_msg_1', 'wa_msg_2', 'wa_msg_3',
+            'wa_msg_4', 'wa_msg_5']),
+            ('📸 Damals & Heute', 'camera', 'show_development', ['img_then', 'img_now']),
+            ('🎵 Musik & Highlights', 'music', 'show_music', ['song_title', 'song_artist', 'song_cover',
+            'highlight_label']),
+            ('🌍 Trips & Abenteuer', 'map-pin', 'show_highlights', ['trip_city', 'trip_bg', 'gallery_paris',
             'gallery_memes']),
-            ('🎵 Musik & Sentiment', 'music', ['song_title', 'song_artist', 'song_cover', 'highlight_label']),
-            ('📌 Post-it Wand', 'sticky-note', ['postits_title', 'postits_content']),
-            ('✨ Das Finale', 'star', ['chaos_title', 'bucket_title', 'analyzing_text', 'character_type_label',
-            'character_type', 'final_msg_title', 'final_msg_text', 'final_sender_name'])
+            ('📌 Post-it Wand', 'sticky-note', 'show_postits', ['postits_title', 'postits_content']),
+            ('✨ Das Finale', 'star', 'show_character', ['chaos_title', 'bucket_title', 'analyzing_text',
+            'character_type_label', 'character_type', 'final_msg_title', 'final_msg_text', 'final_sender_name'])
             ] %}
 
             <div class="grid grid-cols-1 gap-6">
-                {% for cat_name, cat_icon, cat_keys in categories %}
+                {% for cat_name, cat_icon, show_key, cat_keys in categories %}
                 <details class="glass-card rounded-3xl overflow-hidden group" {% if loop.first %}open{% endif %}>
                     <summary class="category-header flex items-center justify-between p-7 cursor-pointer">
                         <div class="flex items-center gap-5">
@@ -166,8 +168,35 @@
                             </div>
                             <h2 class="text-xl font-bold text-slate-800">{{ cat_name }}</h2>
                         </div>
-                        <i data-lucide="chevron-down"
-                            class="w-6 h-6 text-slate-400 transition-transform group-open:rotate-180"></i>
+                        <div class="flex items-center gap-4">
+                            {% if show_key != 'none' %}
+                            {% set show_config = configs | selectattr('key', 'equalto', show_key) | first %}
+                            <div class="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-full shadow-sm"
+                                onclick="event.stopPropagation()">
+                                <span
+                                    class="text-[10px] font-black uppercase tracking-widest text-slate-400">Sichtbar</span>
+                                <input type="hidden" name="config_{{ show_key }}"
+                                    value="{{ 'true' if show_config and show_config.value == 'true' else 'false' }}"
+                                    id="hidden_{{ show_key }}">
+                                <button type="button" onclick="
+                                        const h = document.getElementById('hidden_{{ show_key }}');
+                                        const b = this;
+                                        const isTrue = h.value === 'true';
+                                        h.value = isTrue ? 'false' : 'true';
+                                        b.classList.toggle('bg-emerald-500', !isTrue);
+                                        b.classList.toggle('bg-slate-200', isTrue);
+                                        b.querySelector('div').classList.toggle('translate-x-4', !isTrue);
+                                    "
+                                    class="w-10 h-6 {{ 'bg-emerald-500' if show_config and show_config.value == 'true' else 'bg-slate-200' }} rounded-full p-1 transition-colors relative">
+                                    <div
+                                        class="w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform {{ 'translate-x-4' if show_config and show_config.value == 'true' else '' }}">
+                                    </div>
+                                </button>
+                            </div>
+                            {% endif %}
+                            <i data-lucide="chevron-down"
+                                class="w-6 h-6 text-slate-400 transition-transform group-open:rotate-180"></i>
+                        </div>
                     </summary>
 
                     <div class="p-10 grid grid-cols-1 lg:grid-cols-2 gap-10 border-t border-slate-100">
