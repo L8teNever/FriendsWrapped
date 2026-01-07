@@ -88,23 +88,25 @@
         /* Floating Background Text/Numbers */
         .bg-floating-text {
             position: absolute;
-            font-size: 40dvh;
+            font-size: 35dvh;
             font-weight: 900;
-            color: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.04);
             z-index: 0;
             pointer-events: none;
             white-space: nowrap;
-            line-height: 1;
-            animation: float-text 15s infinite alternate ease-in-out;
+            line-height: 0.8;
+            letter-spacing: -0.05em;
+            animation: float-text 20s infinite alternate ease-in-out;
+            filter: blur(2px);
         }
 
         @keyframes float-text {
             from {
-                transform: translate(-5%, -5%) rotate(-5deg);
+                transform: translate(-10%, -5%) rotate(-3deg) scale(0.9);
             }
 
             to {
-                transform: translate(5%, 5%) rotate(5deg);
+                transform: translate(10%, 5%) rotate(3deg) scale(1.1);
             }
         }
 
@@ -229,7 +231,7 @@
             {
             transition-delay: {
                     {
-                    0.1 * i
+                    0.05+0.1 * i
                 }
             }
 
@@ -249,7 +251,18 @@
 
         .reveal.active .reveal-item {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateY(0) scale(1) !important;
+        }
+
+        /* Specialized WhatsApp Reveal */
+        .wa-reveal {
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.17, 0.55, 0.55, 1);
+        }
+
+        .reveal.active .wa-reveal {
+            opacity: 1;
+            transform: translate(0, 0) !important;
         }
 
         .swipe-container {
@@ -387,6 +400,84 @@
                 opacity: 1;
                 transform: scale(1);
             }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .glass:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            transform: translateY(-10px) scale(1.02);
+        }
+
+        /* Section Dividers */
+        .curve-divider {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            line-height: 0;
+            z-index: 10;
+        }
+
+        .curve-bottom {
+            bottom: -1px;
+        }
+
+        .curve-top {
+            top: -1px;
+            transform: rotate(180deg);
+        }
+
+        .curve-divider svg {
+            display: block;
+            width: 100%;
+        }
+
+        /* Improved Progress Bars */
+        .progress-container {
+            position: fixed;
+            top: 15px;
+            left: 10px;
+            right: 10px;
+            z-index: 200;
+            display: flex;
+            gap: 6px;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Typography Polish */
+        h1,
+        h2,
+        h3 {
+            letter-spacing: -0.05em;
+        }
+
+        .text-glow {
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
         }
 
         /* Post-it Wall Styles */
@@ -546,7 +637,7 @@
 
         <div class="blob w-72 h-72 bg-pink-300 top-10 right-10"></div>
         <div class="blob w-96 h-96 bg-purple-600 bottom-0 left-[-10%]" style="animation-delay: -8s"></div>
-        <div class="relative z-10 text-center px-6 reveal py-12">
+        <div class="relative z-10 text-center px-6 reveal pt-12 pb-40">
             <h2 class="text-4xl md:text-7xl font-black mb-6 italic uppercase tracking-tighter stagger-1 text-white">
                 {{ config.get('birthday_title', 'HAPPY BIRTHDAY!') }}</h2>
             <div
@@ -653,20 +744,18 @@
                     {{ config.get('wa_title', 'DEINE LEGENDÄREN NACHRICHTEN') }}</h2>
             </div>
 
-            <div class="space-y-4">
+            <div class="space-y-6 pb-20">
                 {% for msg in config.get('wa_messages', '').split('\n') %}
                 {% if msg.strip() %}
-                <div class="wa-card bg-[#202c33] p-6 rounded-[2rem] border border-white/5 shadow-2xl stagger-{{ loop.index + 1 }} hover:bg-[#2a3942] transition-colors group flex items-start gap-4"
-                    style="transform: translateX({{ '30px' if loop.index % 2 == 0 else '-30px' }})">
+                {% set is_even = loop.index % 2 == 0 %}
+                <div class="wa-card {{ 'ml-auto rounded-tr-none bg-[#005c4b]' if is_even else 'mr-auto rounded-tl-none bg-[#202c33]' }} max-w-[85%] p-5 rounded-[1.5rem] border border-white/5 shadow-2xl wa-reveal stagger-{{ loop.index + 1 }} hover:brightness-110 transition-all group flex items-start gap-3"
+                    style="transform: {{ 'translate(40px, 20px)' if is_even else 'translate(-40px, 20px)' }}">
                     <div class="flex-1">
-                        <p
-                            class="text-lg font-medium text-white group-hover:scale-105 transition-transform duration-500">
-                            "{{ msg }}"</p>
-                        <div class="mt-4 flex items-center justify-end opacity-40">
-                            <div class="flex items-center gap-1">
-                                <span class="text-[10px] font-bold mr-2 text-white">22:31</span>
-                                <i data-lucide="check-check" class="w-3 h-3 text-[#53bdeb]"></i>
-                            </div>
+                        <p class="text-[15px] md:text-lg font-medium text-white leading-relaxed">
+                            "{{ msg.strip() }}"</p>
+                        <div class="mt-2 flex items-center justify-end opacity-40">
+                            <span class="text-[9px] font-bold mr-1 text-white">22:31</span>
+                            <i data-lucide="check-check" class="w-3 h-3 text-[#53bdeb]"></i>
                         </div>
                     </div>
                 </div>
@@ -889,21 +978,25 @@
         <div class="blob w-72 h-72 bg-blue-400 left-[-5%] top-[-5%]"></div>
         <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl stagger-1 text-white py-12">
             <h2
-                class="text-5xl md:text-8xl font-black italic uppercase mb-12 tracking-tighter leading-none text-white text-white">
+                class="text-5xl md:text-8xl font-black italic uppercase mb-12 tracking-tighter leading-none text-white text-glow">
                 {{ config.get('bucket_title', 'Was wir noch erleben') }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {% for item in config.get('bucket_items', '').split('\n') %}
                 {% if item.strip() %}
                 {% set parts = item.split('|') %}
-                <div
-                    class="glass p-8 flex items-center gap-6 text-left reveal-item stagger-{{ loop.index + 1 }} group hover:bg-white/20 transition-colors">
-                    <div class="bg-white/20 p-5 rounded-[2rem] group-hover:rotate-12 transition-transform shadow-xl">
+                <div class="glass p-8 flex items-center gap-6 text-left reveal-item stagger-{{ loop.index + 1 }} group">
+                    <div
+                        class="bg-white/10 p-6 rounded-[2.2rem] group-hover:rotate-12 transition-all duration-500 shadow-xl group-hover:bg-white/20 group-hover:scale-110">
                         <i data-lucide="{{ parts[0] if parts|length > 0 else 'star' }}" class="w-8 h-8 text-white"></i>
                     </div>
                     <div>
-                        <p class="text-[10px] font-black opacity-50 uppercase text-white tracking-widest">{{ parts[1] if
+                        <p class="text-[10px] font-black opacity-40 uppercase text-white tracking-[0.4em] mb-2">{{
+                            parts[1] if
                             parts|length > 1 else 'Ziel' }}</p>
-                        <p class="text-2xl font-black italic text-white">{{ parts[2] if parts|length > 2 else 'Bucket
+                        <p
+                            class="text-2xl md:text-3xl font-black italic text-white group-hover:text-glow transition-all">
+                            {{
+                            parts[2] if parts|length > 2 else 'Bucket
                             List Item' }}</p>
                     </div>
                 </div>
