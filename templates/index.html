@@ -569,6 +569,7 @@
     <!-- Dynamic Transition Helper -->
     {% set ns = namespace(found=false, next_color='#f093fb') %}
     {% set section_order = [
+    ('intro', true, '#1db954'),
     ('birthday', config.get('show_birthday', 'true') == 'true', '#8e2de2'),
     ('stats', config.get('show_stats', 'true') == 'true', '#ff416c'),
     ('chat', config.get('show_whatsapp', 'true') == 'true', '#00b4db'),
