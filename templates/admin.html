@@ -161,7 +161,8 @@
 
             <div class="grid grid-cols-1 gap-6">
                 {% for cat_name, cat_icon, show_key, cat_keys in categories %}
-                <details class="glass-card rounded-3xl overflow-hidden group" {% if loop.first %}open{% endif %}>
+                <details class="glass-card rounded-3xl overflow-hidden group" data-category="{{ cat_name }}" {% if
+                    loop.first %}open{% endif %}>
                     <summary class="category-header flex items-center justify-between p-7 cursor-pointer">
                         <div class="flex items-center gap-5">
                             <div
@@ -333,9 +334,10 @@
             </div>
 
             <div class="sticky bottom-10 z-50 flex justify-center">
-                <button type="submit"
+                <button type="submit" id="save-btn"
                     class="px-12 py-5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-black text-lg rounded-full shadow-2xl shadow-violet-200 hover:scale-105 active:scale-95 transition-all flex items-center gap-4">
-                    <i data-lucide="save" class="w-6 h-6"></i> Änderungen speichern
+                    <i data-lucide="save" id="save-icon" class="w-6 h-6"></i>
+                    <span id="save-text">Änderungen speichern</span>
                 </button>
             </div>
         </form>
@@ -426,6 +428,18 @@
         </section>
     </main>
 
+    <!-- Full Image Preview Modal -->
+    <div id="full-image-modal"
+        class="fixed inset-0 z-[200] bg-slate-900/95 backdrop-blur-xl hidden items-center justify-center p-4 md:p-12"
+        onclick="closeFullImage()">
+        <button class="absolute top-8 right-8 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+        <img id="full-preview-img" src=""
+            class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl border border-white/10"
+            onclick="event.stopPropagation()">
+    </div>
+
     <!-- Media Picker Modal -->
     <div id="media-picker-modal"
         class="fixed inset-0 z-[100] bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-6">
@@ -440,10 +454,11 @@
                     <i data-lucide="x" class="w-6 h-6 text-slate-400"></i>
                 </button>
             </div>
-            <div id="picker-grid" class="flex-1 overflow-y-auto p-8 grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50">
+            <div id="picker-grid"
+                class="flex-1 overflow-y-auto p-8 grid grid-cols-2 lg:grid-cols-4 gap-6 bg-slate-50 content-start">
                 <!-- Images loaded here -->
             </div>
-            <div class="p-8 border-t border-slate-100 flex justify-end gap-4">
+            <div class="p-8 border-t border-slate-100 flex justify-end gap-4 bg-white">
                 <button onclick="closeMediaPicker()"
                     class="px-8 py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition">Abbrechen</button>
                 <button id="confirm-selection"
@@ -490,7 +505,10 @@
                 <div class="group relative aspect-square bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-violet-400 transition shadow-sm">
                     <img src="${file.url}" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
-                        <button onclick="deleteMedia('${file.name}')" class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                        <button onclick="showFullImage('${file.url}')" class="p-3 bg-white/20 text-white rounded-xl hover:bg-white/30 backdrop-blur-sm transition">
+                            <i data-lucide="eye" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="deleteMedia('${file.name}')" class="p-3 bg-red-500/80 text-white rounded-xl hover:bg-red-500 backdrop-blur-sm transition">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -547,8 +565,13 @@
                 const isSelected = selectedUrls.includes(file.url);
                 return `
                     <div onclick="togglePickerSelection('${file.url}', this)" 
-                         class="media-item relative aspect-square bg-white rounded-2xl border-4 ${isSelected ? 'border-violet-500' : 'border-slate-100'} overflow-hidden cursor-pointer hover:border-violet-300 transition">
+                         class="media-item group relative aspect-square bg-white rounded-2xl border-4 ${isSelected ? 'border-violet-500' : 'border-slate-100'} overflow-hidden cursor-pointer hover:border-violet-300 transition">
                         <img src="${file.url}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                             <button onclick="event.stopPropagation(); showFullImage('${file.url}')" class="p-2 bg-white/20 text-white rounded-lg hover:bg-white/40 backdrop-blur-md transition">
+                                <i data-lucide="maximize-2" class="w-4 h-4"></i>
+                             </button>
+                        </div>
                         ${isSelected ? '<div class="check-badge absolute top-2 right-2 bg-violet-500 text-white p-1 rounded-full"><i data-lucide="check" class="w-4 h-4"></i></div>' : ''}
                     </div>
                 `;
@@ -611,9 +634,13 @@
             list.innerHTML = urls.map(url => `
                 <div class="w-16 h-16 rounded-lg overflow-hidden border border-slate-200 shadow-sm relative group">
                     <img src="${url}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center cursor-pointer" 
-                         onclick="removeFromGallery('${inputId}', '${url}')">
-                        <i data-lucide="x" class="w-4 h-4 text-white"></i>
+                    <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1">
+                        <button onclick="showFullImage('${url}')" class="p-1 text-white hover:text-violet-300 transition">
+                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="removeFromGallery('${inputId}', '${url}')" class="p-1 text-white hover:text-red-400 transition">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
@@ -626,6 +653,23 @@
             input.value = urls.join(',');
             input.dispatchEvent(new Event('change', { bubbles: true }));
         };
+
+        // Full Image Preview Logic
+        window.showFullImage = function (url) {
+            const modal = document.getElementById('full-image-modal');
+            const img = document.getElementById('full-preview-img');
+            img.src = url;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Prevent scroll
+        }
+
+        window.closeFullImage = function () {
+            const modal = document.getElementById('full-image-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = ''; // Restore scroll
+        }
 
         // Stats Builder JS
         function parseStats() {
@@ -692,6 +736,66 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Restore details state
+            const openCategories = JSON.parse(localStorage.getItem('admin_open_categories') || '[]');
+            document.querySelectorAll('details[data-category]').forEach(el => {
+                const catId = el.getAttribute('data-category');
+                if (openCategories.includes(catId)) el.open = true;
+
+                el.addEventListener('toggle', () => {
+                    const currentOpen = JSON.parse(localStorage.getItem('admin_open_categories') || '[]');
+                    const newOpen = el.open
+                        ? [...new Set([...currentOpen, catId])]
+                        : currentOpen.filter(id => id !== catId);
+                    localStorage.setItem('admin_open_categories', JSON.stringify(newOpen));
+                });
+            });
+
+            // AJAX Form Submit
+            const form = document.querySelector('form');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('save-btn');
+                const text = document.getElementById('save-text');
+                const icon = document.getElementById('save-icon');
+
+                // Loading state
+                btn.disabled = true;
+                btn.classList.add('opacity-80', 'cursor-not-allowed');
+                const originalText = text.innerText;
+                text.innerText = 'Speichere...';
+
+                try {
+                    const formData = new FormData(form);
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (res.ok) {
+                        text.innerText = 'Gespeichert! ✨';
+                        btn.classList.replace('from-violet-600', 'from-emerald-500');
+                        btn.classList.replace('to-indigo-600', 'to-emerald-600');
+                        setTimeout(() => {
+                            text.innerText = originalText;
+                            btn.disabled = false;
+                            btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                            btn.classList.replace('from-emerald-500', 'from-violet-600');
+                            btn.classList.replace('to-emerald-600', 'to-indigo-600');
+                        }, 2000);
+                    } else {
+                        throw new Error('Save failed');
+                    }
+                } catch (err) {
+                    text.innerText = 'Fehler beim Speichern ❌';
+                    setTimeout(() => {
+                        text.innerText = originalText;
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                    }, 2000);
+                }
+            });
+
             // Stats init
             const stats = parseStats();
             if (stats.length === 0) {
