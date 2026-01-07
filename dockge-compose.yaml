@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  friend-wrapped:
+    image: YOUR_DOCKER_USERNAME/friendswrapped:latest
+    container_name: friend-wrapped
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./instance:/app/instance
+      - ./static/uploads:/app/static/uploads
+    environment:
+      - SECRET_KEY=generate-a-safe-key-here
+      - FLASK_APP=app.py
+    networks:
+      - friend-wrapped-network
+
+networks:
+  friend-wrapped-network:
+    driver: bridge

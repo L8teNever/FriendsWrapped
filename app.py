@@ -87,9 +87,7 @@ def init_db():
             'days_count': '1825',
             'stats_subtitle': 'Tage voller Erinnerungen',
             'chat_stats_title': 'Einfach unzertrennlich',
-            'msg_count': '45230',
-            'call_hours': '840',
-            'media_count': '2150',
+            'chat_stats_config': 'message-circle|45230|Nachrichten\nphone-call|840|Stunden Telefonate\nimage|2150|Geteilte Medien',
             'wa_title': 'Deine legendären Nachrichten',
             'wa_msg_1': 'Hahahah ich kann nicht mehr 😂',
             'wa_msg_2': 'Bin in 5 Minuten da! (Versprochen)',
@@ -203,6 +201,24 @@ def admin_dashboard():
     host_url = request.host_url.rstrip('/')
     return render_template('admin.html', configs=configs, users=users, host_url=host_url)
 
+@app.route('/admin/api/update', methods=['POST'])
+@admin_required
+def api_update_config():
+    data = request.json
+    key = data.get('key')
+    value = data.get('value')
+    
+    if not key:
+        return {"error": "Key missing"}, 400
+        
+    config_entry = SiteConfig.query.get(key)
+    if config_entry:
+        config_entry.value = value
+        db.session.commit()
+        return {"success": True}
+    
+    return {"error": "Config not found"}, 404
+
 @app.route('/admin/users/create', methods=['POST'])
 @admin_required
 def create_user():
@@ -232,8 +248,7 @@ def generate_link(user_id):
 
 # Application bootstrapping
 if __name__ == '__main__':
-    if not os.path.exists('instance/site.db'):
-        init_db()
+    init_db()
     app.run(debug=True, host='0.0.0.0')
 else:
     # For Gunicorn

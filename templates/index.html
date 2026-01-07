@@ -532,27 +532,26 @@
     <section class="wrapped-gradient-chat" data-index="3">
         <div class="blob w-72 h-72 bg-blue-300 top-10 left-10"></div>
         <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl text-white text-white">
-            <h2 class="text-3xl md:text-5xl font-black mb-12 italic uppercase tracking-tighter stagger-1 text-white">
-                {{ config.get('chat_stats_title', 'Einfach unzertrennlich') }}</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-2">
-                <div class="glass p-8 hover:scale-105 transition-transform"><i data-lucide="message-circle"
-                        class="w-8 h-8 mb-4 mx-auto opacity-50"></i>
-                    <h3 class="text-4xl font-black mb-2 text-white"><span class="count-up"
-                            data-target="{{ config.get('msg_count', '45230') }}">0</span></h3>
-                    <p class="text-[10px] font-black uppercase opacity-60 text-white text-white">Nachrichten</p>
+            <h2
+                class="text-3xl md:text-5xl font-black mb-12 italic uppercase tracking-tighter stagger-1 text-white flex items-center justify-center gap-4">
+                {{ config.get('chat_stats_title', 'Einfach unzertrennlich') }}
+            </h2>
+            <div class="flex flex-wrap justify-center gap-6 stagger-2">
+                {% for line in config.get('chat_stats_config', '').split('\n') %}
+                {% if line.strip() %}
+                {% set parts = line.split('|') %}
+                {% if parts|length >= 3 %}
+                <div class="glass p-8 hover:scale-105 transition-transform w-full md:w-72">
+                    <i data-lucide="{{ parts[0].strip() }}" class="w-8 h-8 mb-4 mx-auto opacity-50"></i>
+                    <h3 class="text-4xl font-black mb-2 text-white">
+                        <span class="count-up" data-target="{{ parts[1].strip() }}">0</span>
+                    </h3>
+                    <p class="text-[10px] font-black uppercase opacity-60 text-white text-white">{{ parts[2].strip() }}
+                    </p>
                 </div>
-                <div class="glass p-8 hover:scale-105 transition-transform"><i data-lucide="phone-call"
-                        class="w-8 h-8 mb-4 mx-auto opacity-50"></i>
-                    <h3 class="text-4xl font-black mb-2 text-white"><span class="count-up"
-                            data-target="{{ config.get('call_hours', '840') }}">0</span></h3>
-                    <p class="text-[10px] font-black uppercase opacity-60 text-white text-white">Stunden Telefonate</p>
-                </div>
-                <div class="glass p-8 hover:scale-105 transition-transform"><i data-lucide="image"
-                        class="w-8 h-8 mb-4 mx-auto opacity-50"></i>
-                    <h3 class="text-4xl font-black mb-2 text-white"><span class="count-up"
-                            data-target="{{ config.get('media_count', '2150') }}">0</span></h3>
-                    <p class="text-[10px] font-black uppercase opacity-60 text-white text-white">Geteilte Medien</p>
-                </div>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
             </div>
         </div>
         <div class="curve-divider curve-bottom">
