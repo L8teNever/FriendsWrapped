@@ -124,41 +124,41 @@
             }
         }
 
-        /* Gradients */
+        /* Gradients - Vertical for seamless dividers */
         .wrapped-gradient-1 {
-            background: linear-gradient(-45deg, #1db954, #191414, #1db954);
+            background: linear-gradient(to bottom, #1db954, #191414);
         }
 
         .wrapped-gradient-birthday {
-            background: linear-gradient(135deg, #8e2de2, #4a00e0, #8e2de2);
+            background: linear-gradient(to bottom, #8e2de2, #4a00e0);
         }
 
         .wrapped-gradient-stats {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b, #ff416c);
+            background: linear-gradient(to bottom, #ff416c, #ff4b2b);
         }
 
         .wrapped-gradient-chat {
-            background: linear-gradient(225deg, #00b4db, #0083b0, #00b4db);
+            background: linear-gradient(to bottom, #00b4db, #0083b0);
         }
 
         .wrapped-gradient-thennow {
-            background: linear-gradient(135deg, #2af598, #009efd, #2af598);
+            background: linear-gradient(to bottom, #2af598, #009efd);
         }
 
         .wrapped-gradient-funny {
-            background: linear-gradient(45deg, #FFD200, #F7971E, #FFD200);
+            background: linear-gradient(to bottom, #FFD200, #F7971E);
         }
 
         .wrapped-gradient-music {
-            background: linear-gradient(135deg, #4facfe, #00f2fe, #4facfe);
+            background: linear-gradient(to bottom, #4facfe, #00f2fe);
         }
 
         .wrapped-gradient-future {
-            background: linear-gradient(225deg, #667eea, #764ba2, #667eea);
+            background: linear-gradient(to bottom, #667eea, #764ba2);
         }
 
         .wrapped-gradient-profile {
-            background: linear-gradient(45deg, #f953c6, #b91d73, #f953c6);
+            background: linear-gradient(to bottom, #f953c6, #b91d73);
         }
 
         .wrapped-gradient-4 {
@@ -537,7 +537,7 @@
     <!-- 2. Geburtstag -->
     <!-- 2. Happy Birthday -->
     {% if config.get('show_birthday', 'true') == 'true' %}
-    <section class="wrapped-gradient-birthday gradient-animate" data-index="1">
+    <section class="wrapped-gradient-birthday" data-index="1">
         <div class="bg-floating-text opacity-5 select-none stagger-1" style="left: -10%; top: 10%;">{{
             config.get('birthday_age', '19') }}</div>
         <div class="blob w-72 h-72 bg-pink-300 top-10 right-10"></div>
@@ -565,7 +565,7 @@
 
     <!-- 3. Overall Stats -->
     {% if config.get('show_stats', 'true') == 'true' %}
-    <section class="wrapped-gradient-stats gradient-animate" data-index="2">
+    <section class="wrapped-gradient-stats" data-index="2">
         <div class="bg-floating-text" style="right: -20%; bottom: 0%;">STATS</div>
         <div class="blob w-96 h-96 bg-white/10 left-[-10%] top-10"></div>
         <div class="relative z-10 reveal text-center px-6 py-12">
@@ -599,7 +599,7 @@
 
     <!-- 4. Chat Stats -->
     {% if config.get('show_whatsapp', 'true') == 'true' %}
-    <section class="wrapped-gradient-chat gradient-animate" data-index="3">
+    <section class="wrapped-gradient-chat" data-index="3">
         <div class="bg-floating-text" style="left: -10%; top: 20%;">CHAT</div>
         <div class="blob w-72 h-72 bg-blue-300 top-10 left-10"></div>
         <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl text-white py-12">
@@ -737,35 +737,96 @@
 
     <!-- 7. Meme-Galerie (Anklickbar & Staggered) -->
     {% if config.get('show_chaos', 'true') == 'true' %}
-    <section class="wrapped-gradient-funny" data-index="6">
-        <div class="relative z-10 w-full max-w-5xl px-6 text-black">
-            <div class="reveal text-center">
-                <h2 class="text-3xl md:text-5xl font-black mb-12 italic uppercase tracking-tighter stagger-1">
+    <section class="wrapped-gradient-funny overflow-hidden" data-index="6">
+        <!-- Floating Chaos Elements -->
+        <div class="absolute inset-0 pointer-events-none opacity-20">
+            <div class="absolute top-1/4 left-1/4 text-6xl animate-bounce" style="animation-duration: 3s;">🤪</div>
+            <div class="absolute bottom-1/3 right-1/4 text-5xl animate-pulse" style="animation-duration: 4s;">✨</div>
+            <div class="absolute top-1/3 right-10 text-4xl -rotate-12">🔥</div>
+            <div class="absolute bottom-10 left-1/2 text-6xl rotate-12">😂</div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-6xl px-6">
+            <div class="reveal text-center mb-16">
+                <h2 class="text-4xl md:text-7xl font-black mb-4 italic uppercase tracking-tighter text-black stagger-1">
                     {{ config.get('chaos_title', 'Unsere Chaos-Momente') }}</h2>
+                <div class="h-2 w-24 bg-black mx-auto rounded-full opacity-20 stagger-2"></div>
             </div>
-            <div class="flex flex-wrap justify-center gap-6">
-                <!-- Polaroid 1 -->
-                <div onclick="openGallery('memes')"
-                    class="reveal stagger-2 w-44 h-56 md:w-56 md:h-72 bg-white p-2 pb-10 shadow-xl transform -rotate-3 hover:rotate-0 hover:scale-105 transition-all cursor-pointer">
-                    <div class="w-full h-full overflow-hidden bg-zinc-200">
-                        <img src="https://images.unsplash.com/photo-1531928351158-2f7360b94b51?w=400"
-                            class="w-full h-full object-cover">
+
+            <div class="relative h-[500px] md:h-[600px] w-full flex items-center justify-center">
+                <!-- Scattered Polaroid Gallery -->
+                <div class="relative w-full max-w-4xl h-full flex items-center justify-center">
+
+                    <!-- Polaroid 1 - Top Leftish -->
+                    <div onclick="openGallery('memes')"
+                        class="reveal stagger-2 absolute left-[5%] top-[10%] md:left-[15%] group cursor-pointer z-10">
+                        <div
+                            class="absolute -top-6 left-1/2 -translate-x-1/2 w-16 h-8 bg-black/10 backdrop-blur-sm -rotate-3 z-20">
+                        </div>
+                        <div
+                            class="w-40 h-52 md:w-56 md:h-72 bg-[#fdfdfd] p-3 pb-12 shadow-[20px_20px_60px_rgba(0,0,0,0.15)] rounded-sm transform -rotate-6 group-hover:rotate-0 group-hover:scale-110 group-hover:z-50 transition-all duration-500 border border-black/5">
+                            <div class="w-full h-full overflow-hidden bg-zinc-200 rounded-sm">
+                                <img src="https://images.unsplash.com/photo-1531928351158-2f7360b94b51?w=400"
+                                    class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0">
+                            </div>
+                            <p
+                                class="absolute bottom-3 left-0 w-full text-center font-['Inter'] font-black text-xs md:text-sm text-black/40 italic">
+                                #CHAOS</p>
+                        </div>
                     </div>
-                </div>
-                <!-- Polaroid 2 -->
-                <div onclick="openGallery('memes')"
-                    class="reveal stagger-3 w-44 h-56 md:w-56 md:h-72 bg-white p-2 pb-10 shadow-xl transform rotate-6 md:-translate-y-8 hover:rotate-0 hover:scale-105 transition-all cursor-pointer">
-                    <div class="w-full h-full overflow-hidden bg-zinc-200">
-                        <img src="https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=400"
-                            class="w-full h-full object-cover">
+
+                    <!-- Polaroid 2 - Bottom Centerish -->
+                    <div onclick="openGallery('memes')"
+                        class="reveal stagger-3 absolute right-[5%] top-[5%] md:right-[20%] group cursor-pointer z-20">
+                        <div
+                            class="absolute -top-6 left-1/2 -translate-x-1/2 w-16 h-8 bg-blue-500/10 backdrop-blur-sm rotate-6 z-20">
+                        </div>
+                        <div
+                            class="w-44 h-56 md:w-60 md:h-[300px] bg-[#fdfdfd] p-4 pb-14 shadow-[30px_30px_70px_rgba(0,0,0,0.2)] rounded-sm transform rotate-3 group-hover:rotate-0 group-hover:scale-110 group-hover:z-50 transition-all duration-500 border border-black/5">
+                            <div class="w-full h-full overflow-hidden bg-zinc-200 rounded-sm">
+                                <img src="https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=400"
+                                    class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0">
+                            </div>
+                            <p
+                                class="absolute bottom-4 left-0 w-full text-center font-['Inter'] font-black text-sm md:text-base text-black/40 italic leading-none">
+                                VIBES ⚡️</p>
+                        </div>
                     </div>
-                </div>
-                <!-- Polaroid 3 -->
-                <div onclick="openGallery('memes')"
-                    class="reveal stagger-4 w-44 h-56 md:w-56 md:h-72 bg-white p-2 pb-10 shadow-xl transform -rotate-6 hover:rotate-0 hover:scale-105 transition-all cursor-pointer">
-                    <div class="w-full h-full overflow-hidden bg-zinc-200">
-                        <img src="https://images.unsplash.com/photo-1543332164-6e82f355badc?w=400"
-                            class="w-full h-full object-cover">
+
+                    <!-- Polaroid 3 - Bottom Leftish -->
+                    <div onclick="openGallery('memes')"
+                        class="reveal stagger-4 absolute bottom-[10%] left-[10%] md:left-[25%] group cursor-pointer z-30">
+                        <div
+                            class="absolute -top-6 left-1/2 -translate-x-1/2 w-16 h-8 bg-pink-500/10 backdrop-blur-sm -rotate-12 z-20">
+                        </div>
+                        <div
+                            class="w-40 h-52 md:w-56 md:h-72 bg-[#fdfdfd] p-3 pb-12 shadow-[20px_20px_60px_rgba(0,0,0,0.15)] rounded-sm transform rotate-12 group-hover:rotate-0 group-hover:scale-110 group-hover:z-50 transition-all duration-500 border border-black/5">
+                            <div class="w-full h-full overflow-hidden bg-zinc-200 rounded-sm">
+                                <img src="https://images.unsplash.com/photo-1543332164-6e82f355badc?w=400"
+                                    class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0">
+                            </div>
+                            <p
+                                class="absolute bottom-3 left-0 w-full text-center font-['Inter'] font-black text-xs md:text-sm text-black/40 italic">
+                                LEGENDÄR</p>
+                        </div>
+                    </div>
+
+                    <!-- Polaroid 4 - Center Right (Small) -->
+                    <div onclick="openGallery('memes')"
+                        class="reveal stagger-5 absolute bottom-[15%] right-[10%] md:right-[25%] group cursor-pointer z-10 hidden sm:block">
+                        <div
+                            class="absolute -top-6 left-1/2 -translate-x-1/2 w-10 h-6 bg-yellow-500/10 backdrop-blur-sm rotate-2 z-20">
+                        </div>
+                        <div
+                            class="w-32 h-44 bg-[#fdfdfd] p-2 pb-10 shadow-[15px_15px_40px_rgba(0,0,0,0.1)] rounded-sm transform -rotate-12 group-hover:rotate-0 group-hover:scale-110 group-hover:z-50 transition-all duration-500 border border-black/5">
+                            <div class="w-full h-full overflow-hidden bg-zinc-200 rounded-sm">
+                                <img src="https://images.unsplash.com/photo-1531123897727-8f129e16fd3c?w=400"
+                                    class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0">
+                            </div>
+                            <p
+                                class="absolute bottom-2 left-0 w-full text-center font-['Inter'] font-black text-[10px] text-black/40 italic">
+                                UNS</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -781,7 +842,7 @@
 
     <!-- 8. Musik -->
     {% if config.get('show_music', 'true') == 'true' %}
-    <section class="wrapped-gradient-music gradient-animate" data-index="7">
+    <section class="wrapped-gradient-music" data-index="7">
         <div class="bg-floating-text" style="right: -10%; top: 10%;">MUSIC</div>
         <div class="blob w-96 h-96 bg-cyan-200 top-[-10%] left-[-10%]"></div>
         <div class="relative z-10 text-center px-6 reveal">
@@ -857,7 +918,7 @@
 
     <!-- 10. Bucket List -->
     {% if config.get('show_bucketlist', 'true') == 'true' %}
-    <section class="wrapped-gradient-future gradient-animate" data-index="9">
+    <section class="wrapped-gradient-future" data-index="9">
         <div class="bg-floating-text" style="right: -10%; top: 10%;">GOALS</div>
         <div class="blob w-72 h-72 bg-blue-400 left-[-5%] top-[-5%]"></div>
         <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl stagger-1 text-white py-12">
@@ -934,7 +995,7 @@
 
     <!-- 12. Reveal Charakter -->
     {% if config.get('show_character', 'true') == 'true' %}
-    <section class="wrapped-gradient-profile gradient-animate" data-index="11" id="profile-reveal-section">
+    <section class="wrapped-gradient-profile" data-index="11" id="profile-reveal-section">
         <div class="bg-floating-text" style="right: -10%; top: 20%;">ULTIMATE</div>
         <div class="blob w-96 h-96 bg-white/20 top-0 right-[-10%]"></div>
         <div class="relative z-10 text-center px-6 reveal w-full max-w-lg py-12">
