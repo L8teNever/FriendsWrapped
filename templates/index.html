@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ config.get('page_title', 'Unsere Story | Friendship Wrapped') }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+        /* Scroll Snapping */
+        html {
+            scroll-snap-type: y mandatory;
+            height: 100%;
+            background-color: #000;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: white;
+            overflow-x: hidden;
+            height: 100%;
+            margin: 0;
+            background-color: #000;
+        }
+
+        /* Spotify Grain/Noise Effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        section {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            min-height: 100dvh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Animated Background Blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 1;
+            opacity: 0.6;
+            animation: move 20s infinite alternate;
+        }
+
+        @keyframes move {
+            from {
+                transform: translate(-20%, -20%) scale(1);
+            }
+
+            to {
+                transform: translate(20%, 20%) scale(1.2);
+            }
+        }
+
+        /* Gradients */
+        .wrapped-gradient-1 {
+            background: #1db954;
+        }
+
+        .wrapped-gradient-birthday {
+            background: #8e2de2;
+        }
+
+        .wrapped-gradient-stats {
+            background: #ff416c;
+        }
+
+        .wrapped-gradient-chat {
+            background: #00b4db;
+        }
+
+        .wrapped-gradient-whatsapp {
+            background: #111b21;
+        }
+
+        .wrapped-gradient-thennow {
+            background: #2af598;
+        }
+
+        .wrapped-gradient-funny {
+            background: #FFD200;
+        }
+
+        .wrapped-gradient-music {
+            background: #4facfe;
+        }
+
+        .wrapped-gradient-future {
+            background: #667eea;
+        }
+
+        .wrapped-gradient-profile {
+            background: #f953c6;
+        }
+
+        .wrapped-gradient-4 {
+            background: #f093fb;
+        }
+
+        /* Fancy Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px) scale(0.9);
+            transition: all 0.8s cubic-bezier(0.17, 0.55, 0.55, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Staggered Children Delay */
+        .stagger-1 {
+            transition-delay: 0.2s !important;
+        }
+
+        .stagger-2 {
+            transition-delay: 0.4s !important;
+        }
+
+        .stagger-3 {
+            transition-delay: 0.6s !important;
+        }
+
+        .stagger-4 {
+            transition-delay: 0.8s !important;
+        }
+
+        .trip-bg-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.3) saturate(1.2);
+            transition: transform 5s ease-out;
+            transform: scale(1.2);
+        }
+
+        section.active .trip-bg-overlay {
+            transform: scale(1);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .curve-divider {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            line-height: 0;
+            z-index: 30;
+        }
+
+        .curve-bottom {
+            bottom: -1px;
+        }
+
+        .curve-top {
+            top: -1px;
+            transform: rotate(180deg);
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 4px;
+            width: 92%;
+            max-width: 450px;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.25);
+            flex-grow: 1;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #fff;
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+
+        /* WhatsApp Pop Animation */
+        .wa-bubble {
+            position: relative;
+            background: #202c33;
+            border-radius: 0 16px 16px 16px;
+            padding: 12px 16px;
+            max-width: 85%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 12px;
+            transform: translateX(-20px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        section.active .wa-bubble {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .swipe-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            width: 100%;
+        }
+
+        .swipe-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .swipe-item {
+            flex-shrink: 0;
+            width: 100%;
+            scroll-snap-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 1.5rem;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #fff;
+            transform: scale(1.3);
+        }
+
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .record-spin {
+            animation: spin 10s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .gift-shake {
+            animation: shake 0.2s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: rotate(-3deg);
+            }
+
+            50% {
+                transform: rotate(3deg);
+            }
+        }
+
+        .gift-pop {
+            transform: scale(3) !important;
+            opacity: 0 !important;
+            transition: all 0.4s ease-in !important;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, transparent, #fff, transparent);
+            box-shadow: 0 0 20px #fff;
+            animation: scan 2s linear infinite;
+            display: none;
+        }
+
+        section.active .scan-line {
+            display: block;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0%;
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        .result-content {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        section.active .result-content {
+            animation: reveal-final 0.5s forwards;
+            animation-delay: 2.5s;
+        }
+
+        @keyframes reveal-final {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-black">
+
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="font-bold uppercase tracking-[0.2em] text-[10px] opacity-70 text-white">Wird vorbereitet...</p>
+    </div>
+
+    <!-- Progress Bars -->
+    <div class="progress-container" id="progressBarWrapper"></div>
+
+    <!-- Gallery Modal -->
+    <div id="gallery-modal"
+        class="fixed inset-0 z-[200] bg-black/98 backdrop-blur-2xl hidden items-center justify-center p-4">
+        <button id="close-modal"
+            class="absolute top-6 right-6 p-3 bg-white/10 rounded-full z-[210] border border-white/10 active:scale-90 transition-transform">
+            <i data-lucide="x" class="w-6 h-6 text-white"></i>
+        </button>
+        <div class="max-w-5xl w-full max-h-[85vh] overflow-y-auto px-4 py-10">
+            <h2 id="modal-title" class="text-3xl font-black italic uppercase text-center mb-8 text-white">
+                Abenteuer-Bilder</h2>
+            <div id="modal-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-white"></div>
+        </div>
+    </div>
+
+    <!-- 1. Intro -->
+    <section class="wrapped-gradient-1" data-index="0">
+        <div class="blob w-64 h-64 bg-green-400 left-[-10%] top-[-10%]"></div>
+        <div class="blob w-96 h-96 bg-black bottom-[-10%] right-[-10%]" style="animation-delay: -5s"></div>
+        <div class="relative z-10 text-center px-6 reveal active">
+            <h2 class="text-sm font-black uppercase tracking-[0.4em] mb-4 opacity-70 stagger-1 text-white">Friendship
+                Wrapped</h2>
+            <h1 class="text-7xl md:text-[10rem] font-black mb-6 tracking-tighter leading-none text-white stagger-2">{{
+                config.get('title_main', 'UNSERE<br>STORY')|safe }}</h1>
+            <p class="text-base md:text-xl opacity-80 font-bold italic mb-8 stagger-3 text-white">{{
+                config.get('intro_text', 'Bereit für eine Zeitreise durch unsere Freundschaft?') }}</p>
+            <div class="animate-bounce opacity-30 mt-10 stagger-4"><i data-lucide="chevron-down"
+                    class="mx-auto w-8 h-8 text-white"></i></div>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 0C240 80 1200 80 1440 0V120H0V0Z" fill="#8e2de2" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 2. Geburtstag -->
+    <section id="birthday-section" class="wrapped-gradient-birthday" data-index="1">
+        <div class="blob w-80 h-80 bg-purple-400 top-0 right-0"></div>
+        <div class="big-number -left-8 top-10 rotate-12 count-up text-white text-white"
+            data-target="{{ config.get('birthday_age', '19') }}">0</div>
+        <div class="relative z-10 text-center px-6 reveal">
+            <div class="mb-6 inline-block p-4 bg-white/10 rounded-full backdrop-blur-xl stagger-1"><i
+                    data-lucide="party-popper" class="w-10 h-10 text-yellow-300"></i></div>
+            <h2 class="text-2xl font-black italic uppercase opacity-80 mb-2 stagger-2 text-white">Happy Birthday!</h2>
+            <h3
+                class="text-6xl md:text-9xl font-black mb-8 tracking-tighter leading-none uppercase text-white stagger-3">
+                ZUM <span class="count-up" data-target="{{ config.get('birthday_age', '19') }}">0</span>.</h3>
+            <p class="text-lg md:text-2xl opacity-90 font-bold max-w-md mx-auto stagger-4 text-white">Heute feiern wir
+                dich und all die Jahre, die wir uns schon kennen!</p>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 120C480 20 960 20 1440 120V120H0V120Z" fill="#ff416c" />
+                <path d="M0 0C480 100 960 100 1440 0V120H0V0Z" fill="#ff416c" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 3. Statistik (Tage) -->
+    <section class="wrapped-gradient-stats" data-index="2">
+        <div class="blob w-96 h-96 bg-red-400 bottom-0 left-0"></div>
+        <div class="relative z-10 text-center px-6 reveal">
+            <h2 class="text-3xl md:text-5xl font-black mb-10 italic uppercase tracking-tighter stagger-1 text-white">
+                Unsere Zeit</h2>
+            <div class="glass p-8 md:p-14 max-w-lg mx-auto transform -rotate-1 stagger-2">
+                <p class="text-sm md:text-lg font-black opacity-70 uppercase tracking-widest mb-4">WIR KENNEN UNS SEIT
+                    JAHREN</p>
+                <h3 class="text-6xl md:text-9xl font-black mb-4 tracking-tighter text-white text-white">
+                    <span class="count-up" data-target="{{ config.get('days_count', '1825') }}">0</span>
+                </h3>
+                <p class="text-xs md:text-base font-black opacity-60 uppercase tracking-[0.2em]">Tage voller
+                    Erinnerungen</p>
+            </div>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 0C360 120 1080 120 1440 0V120H0V0Z" fill="#0083b0" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 4. Chat-Statistiken -->
+    <section class="wrapped-gradient-chat" data-index="3">
+        <div class="blob w-72 h-72 bg-blue-300 top-10 left-10"></div>
+        <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl text-white text-white">
+            <h2 class="text-3xl md:text-5xl font-black mb-12 italic uppercase tracking-tighter stagger-1 text-white">
+                Einfach unzertrennlich</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-2">
+                <div class="glass p-8 hover:scale-105 transition-transform"><i data-lucide="message-circle"
+                        class="w-8 h-8 mb-4 mx-auto opacity-50"></i>
+                    <h3 class="text-4xl font-black mb-2 text-white"><span class="count-up"
+                            data-target="{{ config.get('msg_count', '45230') }}">0</span></h3>
+                    <p class="text-[10px] font-black uppercase opacity-60 text-white text-white">Nachrichten</p>
+                </div>
+                <div class="glass p-8 hover:scale-105 transition-transform"><i data-lucide="phone-call"
+                        class="w-8 h-8 mb-4 mx-auto opacity-50"></i>
+                    <h3 class="text-4xl font-black mb-2 text-white"><span class="count-up"
+                            data-target="{{ config.get('call_hours', '840') }}">0</span></h3>
+                    <p class="text-[10px] font-black uppercase opacity-60 text-white text-white">Stunden Telefonate</p>
+                </div>
+                <div class="glass p-8 hover:scale-105 transition-transform"><i data-lucide="image"
+                        class="w-8 h-8 mb-4 mx-auto opacity-50"></i>
+                    <h3 class="text-4xl font-black mb-2 text-white"><span class="count-up"
+                            data-target="{{ config.get('media_count', '2150') }}">0</span></h3>
+                    <p class="text-[10px] font-black uppercase opacity-60 text-white text-white">Geteilte Medien</p>
+                </div>
+            </div>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 0C360 120 1080 120 1440 0V120H0V0Z" fill="#111b21" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 5. Top 5 WhatsApp Nachrichten -->
+    <section class="wrapped-gradient-whatsapp" data-index="4">
+        <div class="relative z-10 w-full max-w-lg px-6 flex flex-col items-center text-white">
+            <h2
+                class="text-2xl md:text-4xl font-black mb-10 text-center italic uppercase tracking-tighter text-white reveal stagger-1">
+                Deine legendären<br>Nachrichten</h2>
+            <div class="w-full flex flex-col gap-4">
+                <div class="wa-bubble self-start text-white" style="transition-delay: 0.1s">
+                    <p class="text-sm">"{{ config.get('wa_msg_1', 'Hahahah ich kann nicht mehr 😂') }}"</p>
+                </div>
+                <div class="wa-bubble self-start translate-x-4 text-white" style="transition-delay: 0.3s">
+                    <p class="text-sm">"{{ config.get('wa_msg_2', 'Bin in 5 Minuten da! (Versprochen)') }}"</p>
+                </div>
+                <div class="wa-bubble self-start text-white" style="transition-delay: 0.5s">
+                    <p class="text-sm">"{{ config.get('wa_msg_3', 'Was essen wir heute? Ich sterbe 🍕') }}"</p>
+                </div>
+                <div class="wa-bubble self-start -translate-x-2 text-white" style="transition-delay: 0.7s">
+                    <p class="text-sm">"{{ config.get('wa_msg_4', 'Glaub nicht was gerade passiert ist...') }}"</p>
+                </div>
+                <div class="wa-bubble self-start translate-x-6 text-white" style="transition-delay: 0.9s">
+                    <p class="text-sm">"{{ config.get('wa_msg_5', 'Love you Bestie! 💖✨') }}"</p>
+                </div>
+            </div>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 0C360 120 1080 120 1440 0V120H0V0Z" fill="#2af598" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 6. Damals vs Heute -->
+    <section class="wrapped-gradient-thennow" data-index="5">
+        <div class="blob w-80 h-80 bg-cyan-200 right-[-10%] bottom-0"></div>
+        <div class="relative z-10 w-full flex flex-col items-center reveal h-full py-12 text-white">
+            <h2
+                class="text-3xl md:text-6xl font-black mb-6 text-center italic uppercase tracking-tighter px-6 stagger-1 text-white">
+                Die Entwicklung</h2>
+            <div class="swipe-container h-[60vh] md:h-[70vh] stagger-2" id="thenNowSwipe">
+                <div class="swipe-item">
+                    <div class="relative max-w-[85vw] md:max-w-2xl h-full w-full">
+                        <div
+                            class="absolute top-2 left-2 bg-white text-black font-black px-4 py-1 rounded-full z-20 text-xs shadow-lg">
+                            Damals</div>
+                        <div
+                            class="h-full w-full rounded-[2.5rem] overflow-hidden border-4 border-white/20 shadow-2xl bg-zinc-900">
+                            <img src="{{ config.get('img_then', 'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800') }}"
+                                class="w-full h-full object-cover"></div>
+                    </div>
+                </div>
+                <div class="swipe-item">
+                    <div class="relative max-w-[85vw] md:max-w-2xl h-full w-full">
+                        <div
+                            class="absolute top-2 left-2 bg-pink-500 text-white font-black px-4 py-1 rounded-full z-20 text-xs shadow-lg">
+                            Heute</div>
+                        <div
+                            class="h-full w-full rounded-[2.5rem] overflow-hidden border-4 border-white/20 shadow-2xl bg-zinc-900">
+                            <img src="{{ config.get('img_now', 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800') }}"
+                                class="w-full h-full object-cover"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 flex flex-col items-center gap-3 stagger-3">
+                <div class="flex gap-2" id="swipeDots">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                </div>
+                <p
+                    class="text-[10px] font-black uppercase tracking-[0.3em] opacity-60 text-white flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full">
+                    <i data-lucide="arrow-left" class="w-3 h-3 text-white"></i> Swipe <i data-lucide="arrow-right"
+                        class="w-3 h-3 text-white"></i></p>
+            </div>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 0C360 100 1080 100 1440 0V120H0V0Z" fill="#FFD200" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 7. Meme-Galerie (Anklickbar & Staggered) -->
+    <section class="wrapped-gradient-funny" data-index="6">
+        <div class="relative z-10 w-full max-w-5xl px-6 text-black">
+            <div class="reveal text-center">
+                <h2 class="text-3xl md:text-5xl font-black mb-12 italic uppercase tracking-tighter stagger-1">Unsere
+                    Chaos-Momente</h2>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6">
+                <!-- Polaroid 1 -->
+                <div onclick="openGallery('memes')"
+                    class="reveal stagger-2 w-44 h-56 md:w-56 md:h-72 bg-white p-2 pb-10 shadow-xl transform -rotate-3 hover:rotate-0 hover:scale-105 transition-all cursor-pointer">
+                    <div class="w-full h-full overflow-hidden bg-zinc-200">
+                        <img src="https://images.unsplash.com/photo-1531928351158-2f7360b94b51?w=400"
+                            class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <!-- Polaroid 2 -->
+                <div onclick="openGallery('memes')"
+                    class="reveal stagger-3 w-44 h-56 md:w-56 md:h-72 bg-white p-2 pb-10 shadow-xl transform rotate-6 md:-translate-y-8 hover:rotate-0 hover:scale-105 transition-all cursor-pointer">
+                    <div class="w-full h-full overflow-hidden bg-zinc-200">
+                        <img src="https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=400"
+                            class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <!-- Polaroid 3 -->
+                <div onclick="openGallery('memes')"
+                    class="reveal stagger-4 w-44 h-56 md:w-56 md:h-72 bg-white p-2 pb-10 shadow-xl transform -rotate-6 hover:rotate-0 hover:scale-105 transition-all cursor-pointer">
+                    <div class="w-full h-full overflow-hidden bg-zinc-200">
+                        <img src="https://images.unsplash.com/photo-1543332164-6e82f355badc?w=400"
+                            class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 0C360 120 1080 120 1440 0V120H0V0Z" fill="#4facfe" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 8. Musik -->
+    <section class="wrapped-gradient-music" data-index="7">
+        <div class="blob w-96 h-96 bg-cyan-200 top-[-10%] left-[-10%]"></div>
+        <div class="relative z-10 text-center px-6 reveal">
+            <h2
+                class="text-3xl md:text-5xl font-black mb-12 italic uppercase text-white tracking-tighter stagger-1 text-white">
+                Euer All-Time Favorit</h2>
+            <div class="glass p-8 inline-block max-w-[300px] w-full text-left stagger-2">
+                <div
+                    class="record-spin mb-8 mx-auto w-40 h-40 rounded-full bg-zinc-900 border-[8px] border-zinc-800 flex items-center justify-center relative shadow-2xl">
+                    <div class="w-8 h-8 rounded-full bg-black border-2 border-zinc-700 z-10 text-white text-white">
+                    </div>
+                    <img src="{{ config.get('song_cover', 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400') }}"
+                        class="absolute inset-3 rounded-full opacity-40 object-cover">
+                </div>
+                <p class="text-[10px] font-black uppercase text-cyan-200 tracking-widest mb-1 stagger-3 text-white">{{
+                    config.get('song_artist', 'Dauerschleife') }}</p>
+                <h3
+                    class="text-2xl font-black italic tracking-tighter text-white leading-tight stagger-4 text-white text-white">
+                    {{ config.get('song_title', 'Friendship Anthem') }}</h3>
+            </div>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 0C480 100 960 100 1440 0V120H0V0Z" fill="#000000" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 9. Paris Trip -->
+    <section id="trip1" class="bg-black" data-index="8">
+        <div class="trip-bg-overlay"
+            style="background-image: url('{{ config.get('trip_bg', 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200') }}');">
+        </div>
+        <div class="relative z-10 w-full px-6 flex flex-col lg:flex-row items-center gap-10 max-w-6xl reveal">
+            <div class="w-full lg:w-1/2 stagger-1 text-white">
+                <div class="glass p-8 md:p-12">
+                    <span
+                        class="text-pink-500 font-black uppercase text-[10px] tracking-widest mb-3 block italic text-pink-500">Das
+                        Highlight</span>
+                    <h3
+                        class="text-4xl md:text-6xl font-black mb-5 italic uppercase text-white leading-none text-white">
+                        {{ config.get('trip_city', 'Paris Vibes') }}</h3>
+                    <button onclick="openGallery('paris')"
+                        class="bg-white text-black px-6 py-3 rounded-full font-black uppercase text-xs flex items-center gap-2 active:scale-95 transition-all shadow-xl"><i
+                            data-lucide="images" class="w-4 h-4 text-black text-black"></i> Galerie</button>
+                </div>
+            </div>
+            <div class="w-full lg:w-1/2 flex justify-center stagger-2">
+                <div class="relative group cursor-pointer" onclick="openGallery('paris')">
+                    <img src="{{ config.get('trip_bg', 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800') }}"
+                        class="rounded-[2.5rem] shadow-2xl border-[6px] border-white/10 object-cover aspect-square max-w-[240px] md:max-w-md rotate-2 transition-transform duration-500 group-hover:rotate-0">
+                    <div class="absolute -bottom-4 -right-4 bg-pink-500 p-3 rounded-full shadow-lg rotate-12"><i
+                            data-lucide="heart" class="text-white w-5 h-5 text-white"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 0C720 120 1440 0 1440 0V120H0V0Z" fill="#667eea" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 10. Bucket List -->
+    <section class="wrapped-gradient-future" data-index="9">
+        <div class="blob w-72 h-72 bg-blue-400 left-[-5%] top-[-5%]"></div>
+        <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl stagger-1 text-white">
+            <h2
+                class="text-4xl md:text-7xl font-black italic uppercase mb-12 tracking-tighter leading-none text-white text-white">
+                Was wir noch erleben</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass p-6 flex items-center gap-4 text-left stagger-2">
+                    <div class="bg-white/20 p-4 rounded-2xl"><i data-lucide="map" class="text-white text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black opacity-50 uppercase text-white">Ziel #1</p>
+                        <p class="text-xl font-bold italic text-white text-white">Nächster Trip</p>
+                    </div>
+                </div>
+                <div class="glass p-6 flex items-center gap-4 text-left stagger-3">
+                    <div class="bg-white/20 p-4 rounded-2xl"><i data-lucide="heart" class="text-white text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black opacity-50 uppercase text-white">Motto</p>
+                        <p class="text-xl font-bold italic text-white text-white">Immer da sein</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 0C720 100 1440 0 1440 0V120H0V0Z" fill="#b91d73" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 11. Reveal Charakter -->
+    <section class="wrapped-gradient-profile" data-index="10" id="profile-reveal-section">
+        <div class="blob w-96 h-96 bg-white top-0 right-[-10%]" style="opacity: 0.3"></div>
+        <div class="relative z-10 text-center px-6 reveal w-full max-w-md">
+            <div id="analyzing-state" class="mb-10 transition-opacity duration-500">
+                <p class="text-sm font-black uppercase tracking-[0.4em] opacity-70 mb-4 text-white text-white">
+                    Analysiere Freundschaft...</p>
+                <div class="flex justify-center gap-1 text-white text-white">
+                    <div class="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                </div>
+            </div>
+            <div class="profile-card glass p-10 flex flex-col items-center relative overflow-hidden">
+                <div class="scan-line"></div>
+                <div id="reveal-content" class="result-content flex flex-col items-center w-full">
+                    <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mb-8 shadow-2xl"><i
+                            data-lucide="user-check" class="w-12 h-12 text-white text-white"></i></div>
+                    <h2 class="text-xs font-black uppercase tracking-widest text-pink-200 mb-2">Charakter-Typ</h2>
+                    <h3
+                        class="text-5xl font-black italic tracking-tighter text-white mb-6 uppercase text-white text-white">
+                        Elite-Bestie</h3>
+                    <div class="h-px w-full bg-white/10 mb-6"></div>
+                    <p class="text-lg font-bold italic leading-relaxed text-white text-white">Offizielles
+                        Ergebnis:<br>Einer der besten Freunde von Admin.</p>
+                </div>
+            </div>
+        </div>
+        <div class="curve-divider curve-bottom">
+            <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-full h-[60px] md:h-[120px]">
+                <path d="M0 0C720 100 1440 0 1440 0V120H0V0Z" fill="#000000" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 12. Finale -->
+    <section class="wrapped-gradient-4" data-index="11">
+        <div class="blob w-80 h-80 bg-pink-400 left-[-10%] bottom-[-10%] text-white"></div>
+        <div class="relative z-10 text-center px-6 reveal">
+            <div id="gift-box" class="cursor-pointer group inline-block">
+                <div id="gift-visual"
+                    class="bg-white p-10 rounded-[3rem] shadow-2xl relative transition-all duration-300 hover:rotate-2">
+                    <div id="gift-label"
+                        class="absolute -top-4 -right-4 bg-pink-600 text-white text-[10px] font-black px-4 py-2 rounded-full animate-bounce uppercase shadow-lg text-white text-white">
+                        Öffnen</div>
+                    <i data-lucide="gift" class="w-16 h-16 text-pink-500 mx-auto"></i>
+                </div>
+            </div>
+            <div id="final-message" class="hidden">
+                <h2
+                    class="text-5xl md:text-[8rem] font-black mb-6 italic uppercase leading-none tracking-tighter text-white text-white">
+                    {{ config.get('final_msg_title', 'Bestie Forever.') }}</h2>
+                <p
+                    class="text-lg md:text-2xl opacity-90 font-bold max-w-xl mx-auto mb-10 text-white italic text-white text-white">
+                    {{ config.get('final_msg_text', 'Danke für jeden einzelnen Moment. Du bist Familie. Auf ewig!') }}
+                </p>
+                <p class="text-3xl font-black italic uppercase text-pink-100 text-white text-white">{{
+                    config.get('final_sender_name', 'Dein Bestie') }}</p>
+            </div>
+        </div>
+    </section>
+
+    <footer
+        class="py-12 bg-black text-center text-[10px] font-black tracking-[0.5em] opacity-30 uppercase flex items-center justify-center text-white text-white">
+        Memory Wrapped • Unsere Story
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Bilder für die Galerien - Normally this would be dynamic too, but for now hardcoded demo images are fine or fallback
+        // Since the user asked to edit "content", I replaced the main ones. Galleries are complex to edit in a flat config.
+        const tripGalleries = {
+            paris: {
+                title: "{{ config.get('trip_city', 'Abenteuer') }}",
+                images: ["https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=600", "https://images.unsplash.com/photo-1549144511-f099e773c147?w=600", "https://images.unsplash.com/photo-1503917988258-f87a78e3c995?w=600", "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600"]
+            },
+            memes: {
+                title: "Chaos-Momente",
+                images: ["https://images.unsplash.com/photo-1531928351158-2f7360b94b51?w=600", "https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=600", "https://images.unsplash.com/photo-1543332164-6e82f355badc?w=600"]
+            }
+        };
+
+        const totalSections = document.querySelectorAll('section').length;
+        const progressWrapper = document.getElementById('progressBarWrapper');
+        progressWrapper.innerHTML = Array(totalSections).fill('<div class="progress-bar"><div class="progress-fill"></div></div>').join('');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    const idx = entry.target.getAttribute('data-index');
+                    if (idx !== null) updateProgress(parseInt(idx));
+
+                    entry.target.querySelectorAll('.reveal').forEach(r => r.classList.add('active'));
+                    entry.target.querySelectorAll('.count-up').forEach(c => { if (!c.dataset.counted) { c.dataset.counted = true; animateCountUp(c); } });
+
+                    if (entry.target.id === 'profile-reveal-section' && !entry.target.dataset.revealed) {
+                        entry.target.dataset.revealed = "true";
+                        handleProfileReveal();
+                    }
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('section').forEach(s => observer.observe(s));
+
+        function updateProgress(activeIndex) {
+            document.querySelectorAll('.progress-fill').forEach((bar, i) => { bar.style.width = i < activeIndex ? '100%' : (i === activeIndex ? '100%' : '0%'); });
+        }
+
+        const swipeContainer = document.getElementById('thenNowSwipe');
+        const dots = document.querySelectorAll('#swipeDots .dot');
+        if (swipeContainer) {
+            swipeContainer.addEventListener('scroll', () => {
+                const index = Math.round(swipeContainer.scrollLeft / swipeContainer.clientWidth);
+                dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+            });
+        }
+
+        function animateCountUp(el) {
+            const target = parseInt(el.dataset.target);
+            let count = 0;
+            const inc = target / 60;
+            const timer = setInterval(() => {
+                count += inc;
+                if (count >= target) { el.innerText = target.toLocaleString(); clearInterval(timer); }
+                else { el.innerText = Math.floor(count).toLocaleString(); }
+            }, 16);
+        }
+
+        function handleProfileReveal() {
+            const analyzing = document.getElementById('analyzing-state');
+            setTimeout(() => {
+                analyzing.style.opacity = '0';
+                setTimeout(() => {
+                    analyzing.style.display = 'none';
+                    setTimeout(() => { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#f953c6', '#b91d73', '#ffffff'] }); }, 100);
+                }, 500);
+            }, 2500);
+        }
+
+        function openGallery(id) {
+            const data = tripGalleries[id];
+            if (!data) return;
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-grid').innerHTML = data.images.map(img => `<div class="aspect-square rounded-2xl overflow-hidden bg-zinc-900 shadow-lg"><img src="${img}" class="w-full h-full object-cover"></div>`).join('');
+            const modal = document.getElementById('gallery-modal');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; document.documentElement.style.scrollSnapType = 'none';
+        }
+
+        document.getElementById('close-modal').onclick = () => {
+            const modal = document.getElementById('gallery-modal');
+            modal.classList.add('hidden'); modal.classList.remove('flex');
+            document.body.style.overflow = ''; document.documentElement.style.scrollSnapType = 'y mandatory';
+        };
+
+        document.getElementById('gift-box').onclick = function () {
+            const visual = document.getElementById('gift-visual');
+            visual.classList.add('gift-shake');
+            const end = Date.now() + 2000;
+            (function frame() {
+                confetti({ particleCount: 4, angle: 60, spread: 60, origin: { x: 0 }, colors: ['#ff416c', '#1db954', '#ffffff', '#8e2de2'] });
+                confetti({ particleCount: 4, angle: 120, spread: 60, origin: { x: 1 }, colors: ['#ff416c', '#1db954', '#ffffff', '#8e2de2'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+            setTimeout(() => {
+                visual.classList.add('gift-pop');
+                setTimeout(() => { this.style.display = 'none'; document.getElementById('final-message').classList.remove('hidden'); document.getElementById('final-message').classList.add('reveal', 'active'); }, 300);
+            }, 600);
+        };
+
+        window.onload = () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); }
+            }, 1000);
+        };
+    </script>
+</body>
+
+</html>
