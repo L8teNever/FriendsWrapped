@@ -104,6 +104,9 @@
                 class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm">
                 <i data-lucide="settings" class="w-5 h-5"></i> Content Editor
             </a>
+            <a href="#media" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm">
+                <i data-lucide="image" class="w-5 h-5"></i> Media Library
+            </a>
             <a href="#users" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm">
                 <i data-lucide="users" class="w-5 h-5"></i> Benutzer-Manager
             </a>
@@ -207,19 +210,43 @@
                                 }}</label>
 
                             {% if config.key.startswith('img_') or config.key.endswith('_cover') or
-                            config.key.endswith('_bg') %}
+                            config.key.endswith('_bg') or config.key.startswith('gallery_') %}
                             <div
                                 class="flex items-center gap-5 p-5 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner">
-                                {% if config.value %}
-                                <img src="{{ config.value }}"
-                                    class="w-20 h-20 rounded-xl object-cover shadow-md border-2 border-white">
-                                {% endif %}
                                 <div class="flex-1 space-y-3">
-                                    <input type="text" name="config_{{ config.key }}" value="{{ config.value }}"
-                                        class="w-full bg-white px-4 py-2 rounded-xl text-sm border border-slate-200 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-50 transition"
-                                        placeholder="URL...">
-                                    <input type="file" name="file_{{ config.key }}"
-                                        class="block w-full text-[11px] text-slate-500 file:mr-3 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-[11px] file:font-black file:bg-violet-600 file:text-white hover:file:bg-violet-700 cursor-pointer">
+                                    <div class="flex gap-2">
+                                        <input type="text" name="config_{{ config.key }}" value="{{ config.value }}"
+                                            id="input_{{ config.key }}"
+                                            class="flex-1 bg-white px-4 py-2 rounded-xl text-sm border border-slate-200 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-50 transition"
+                                            placeholder="URL...">
+                                        <button type="button"
+                                            onclick="openMediaPicker('input_{{ config.key }}', {{ 'true' if config.key.startswith('gallery_') else 'false' }})"
+                                            class="px-4 py-2 bg-violet-600 text-white rounded-xl text-xs font-bold hover:bg-violet-700 transition flex items-center gap-2">
+                                            <i data-lucide="search" class="w-4 h-4"></i> Auswählen
+                                        </button>
+                                    </div>
+                                    {% if config.key.startswith('gallery_') %}
+                                    <div id="preview_list_{{ config.key }}" class="flex flex-wrap gap-2 mt-2"></div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', () => {
+                                            updateGalleryPreview('input_{{ config.key }}', 'preview_list_{{ config.key }}');
+                                            document.getElementById('input_{{ config.key }}').addEventListener('change', () => {
+                                                updateGalleryPreview('input_{{ config.key }}', 'preview_list_{{ config.key }}');
+                                            });
+                                        });
+                                    </script>
+                                    {% else %}
+                                    <div
+                                        class="w-20 h-20 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
+                                        <img src="{{ config.value }}" id="preview_{{ config.key }}"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <script>
+                                        document.getElementById('input_{{ config.key }}').addEventListener('input', (e) => {
+                                            document.getElementById('preview_{{ config.key }}').src = e.target.value;
+                                        });
+                                    </script>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% else %}
@@ -313,6 +340,27 @@
             </div>
         </form>
 
+        <!-- Media Library Section -->
+        <section id="media" class="hidden mt-32 pt-20 border-t border-slate-200">
+            <div class="mb-12 flex justify-between items-end">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Media Library</h2>
+                    <p class="text-slate-500 mt-2">Verwalte deine Bilder und Videos an einem zentralen Ort.</p>
+                </div>
+                <div>
+                    <input type="file" id="media-upload-input" class="hidden" multiple accept="image/*">
+                    <button onclick="document.getElementById('media-upload-input').click()"
+                        class="px-6 py-3 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 transition flex items-center gap-3">
+                        <i data-lucide="upload-cloud" class="w-5 h-5"></i> Bilder hochladen
+                    </button>
+                </div>
+            </div>
+
+            <div id="media-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <!-- Media files will be loaded here -->
+            </div>
+        </section>
+
         <!-- User Management -->
         <section id="users" class="mt-32 pt-20 border-t border-slate-200">
             <div class="mb-12">
@@ -378,13 +426,212 @@
         </section>
     </main>
 
+    <!-- Media Picker Modal -->
+    <div id="media-picker-modal"
+        class="fixed inset-0 z-[100] bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-6">
+        <div class="bg-white w-full max-w-4xl max-h-[80vh] rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden">
+            <div class="p-8 border-b border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 class="text-2xl font-black text-slate-900">Bilder auswählen</h3>
+                    <p id="picker-mode-text" class="text-slate-400 text-sm font-bold uppercase tracking-widest mt-1">
+                        Single Select</p>
+                </div>
+                <button onclick="closeMediaPicker()" class="p-2 hover:bg-slate-100 rounded-xl transition">
+                    <i data-lucide="x" class="w-6 h-6 text-slate-400"></i>
+                </button>
+            </div>
+            <div id="picker-grid" class="flex-1 overflow-y-auto p-8 grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50">
+                <!-- Images loaded here -->
+            </div>
+            <div class="p-8 border-t border-slate-100 flex justify-end gap-4">
+                <button onclick="closeMediaPicker()"
+                    class="px-8 py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition">Abbrechen</button>
+                <button id="confirm-selection"
+                    class="px-8 py-3 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 transition shadow-lg shadow-violet-200">Übernehmen</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
 
+        // Navigation logic
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (!href.startsWith('#')) return;
+                const targetId = href.substring(1);
+
+                // Set active link
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                // Toggle visibility
+                document.querySelectorAll('main > form, main > section').forEach(el => el.classList.add('hidden'));
+
+                if (targetId === 'content') {
+                    document.querySelector('main > form').classList.remove('hidden');
+                } else {
+                    const section = document.getElementById(targetId);
+                    if (section) section.classList.remove('hidden');
+                }
+
+                if (targetId === 'media') loadMediaLibrary();
+            });
+        });
+
+        // Media Library Logic
+        async function loadMediaLibrary() {
+            const res = await fetch('/admin/media');
+            const data = await res.json();
+            const grid = document.getElementById('media-grid');
+            if (!grid) return;
+            grid.innerHTML = data.files.map(file => `
+                <div class="group relative aspect-square bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-violet-400 transition shadow-sm">
+                    <img src="${file.url}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
+                        <button onclick="deleteMedia('${file.name}')" class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        async function deleteMedia(filename) {
+            if (!confirm('Bild wirklich löschen?')) return;
+            await fetch('/admin/media/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename })
+            });
+            loadMediaLibrary();
+        }
+
+        const mUploadInput = document.getElementById('media-upload-input');
+        if (mUploadInput) {
+            mUploadInput.addEventListener('change', async (e) => {
+                for (const file of e.target.files) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    await fetch('/admin/media/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+                loadMediaLibrary();
+            });
+        }
+
+        // Media Picker Logic
+        let currentTargetInputId = null;
+        let multiSelect = false;
+        let selectedUrls = [];
+
+        async function openMediaPicker(inputId, isMulti = false) {
+            currentTargetInputId = inputId;
+            multiSelect = isMulti;
+            const inputVal = document.getElementById(inputId).value;
+            selectedUrls = multiSelect ? inputVal.split(',').filter(x => x) : [inputVal];
+
+            document.getElementById('picker-mode-text').innerText = multiSelect ? 'Multi Select (Mehrere)' : 'Single Select (Eins)';
+            const modal = document.getElementById('media-picker-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            const res = await fetch('/admin/media');
+            const data = await res.json();
+            const grid = document.getElementById('picker-grid');
+            grid.innerHTML = data.files.map(file => {
+                const isSelected = selectedUrls.includes(file.url);
+                return `
+                    <div onclick="togglePickerSelection('${file.url}', this)" 
+                         class="media-item relative aspect-square bg-white rounded-2xl border-4 ${isSelected ? 'border-violet-500' : 'border-slate-100'} overflow-hidden cursor-pointer hover:border-violet-300 transition">
+                        <img src="${file.url}" class="w-full h-full object-cover">
+                        ${isSelected ? '<div class="check-badge absolute top-2 right-2 bg-violet-500 text-white p-1 rounded-full"><i data-lucide="check" class="w-4 h-4"></i></div>' : ''}
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function togglePickerSelection(url, el) {
+            if (multiSelect) {
+                if (selectedUrls.includes(url)) {
+                    selectedUrls = selectedUrls.filter(u => u !== url);
+                    el.classList.replace('border-violet-500', 'border-slate-100');
+                    const badge = el.querySelector('.check-badge');
+                    if (badge) badge.remove();
+                } else {
+                    selectedUrls.push(url);
+                    el.classList.replace('border-slate-100', 'border-violet-500');
+                    const badge = document.createElement('div');
+                    badge.className = 'check-badge absolute top-2 right-2 bg-violet-500 text-white p-1 rounded-full';
+                    badge.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>';
+                    el.appendChild(badge);
+                    lucide.createIcons();
+                }
+            } else {
+                selectedUrls = [url];
+                document.querySelectorAll('.media-item').forEach(d => {
+                    d.classList.replace('border-violet-500', 'border-slate-100');
+                    const b = d.querySelector('.check-badge');
+                    if (b) b.remove();
+                });
+                el.classList.replace('border-slate-100', 'border-violet-500');
+                const badge = document.createElement('div');
+                badge.className = 'check-badge absolute top-2 right-2 bg-violet-500 text-white p-1 rounded-full';
+                badge.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>';
+                el.appendChild(badge);
+                lucide.createIcons();
+            }
+        }
+
+        function closeMediaPicker() {
+            const modal = document.getElementById('media-picker-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('confirm-selection').addEventListener('click', () => {
+            const input = document.getElementById(currentTargetInputId);
+            input.value = selectedUrls.join(',');
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            closeMediaPicker();
+        });
+
+        function updateGalleryPreview(inputId, listId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const urls = input.value.split(',').filter(x => x);
+            const list = document.getElementById(listId);
+            if (!list) return;
+            list.innerHTML = urls.map(url => `
+                <div class="w-16 h-16 rounded-lg overflow-hidden border border-slate-200 shadow-sm relative group">
+                    <img src="${url}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center cursor-pointer" 
+                         onclick="removeFromGallery('${inputId}', '${url}')">
+                        <i data-lucide="x" class="w-4 h-4 text-white"></i>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        window.removeFromGallery = function (inputId, url) {
+            const input = document.getElementById(inputId);
+            const urls = input.value.split(',').filter(u => u !== url);
+            input.value = urls.join(',');
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        };
+
         // Stats Builder JS
         function parseStats() {
-            const raw = document.getElementById('stats-hidden-input').value;
-            return raw.split('\n').filter(l => l.trim()).map(l => {
+            const input = document.getElementById('stats-hidden-input');
+            if (!input) return [];
+            return input.value.split('\n').filter(l => l.trim()).map(l => {
                 const p = l.split('|');
                 return { icon: p[0] || 'heart', val: p[1] || '0', label: p[2] || '' };
             });
@@ -403,6 +650,7 @@
 
         function addStatRow(data = { icon: 'heart', val: '10', label: 'Neuer Grund' }) {
             const container = document.getElementById('stats-list');
+            if (!container) return;
             const row = document.createElement('div');
             row.className = 'stat-builder-row flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm';
             row.innerHTML = `
@@ -423,7 +671,8 @@
             document.querySelectorAll('.wa-builder-input').forEach(input => {
                 if (input.value.trim()) lines.push(input.value.trim());
             });
-            document.getElementById('wa-hidden-input').value = lines.join('\n');
+            const hidden = document.getElementById('wa-hidden-input');
+            if (hidden) hidden.value = lines.join('\n');
         }
 
         function addWaRow(val = '') {
@@ -454,17 +703,10 @@
             const waInput = document.getElementById('wa-hidden-input');
             if (waInput) {
                 const msgs = waInput.value.split('\n').filter(x => x.trim());
-                if (msgs.length === 0) addWaRow();
-                else msgs.forEach(m => addWaRow(m));
+                if (msgs.length === 0) {
+                    if (document.getElementById('wa-list')) addWaRow();
+                } else msgs.forEach(m => addWaRow(m));
             }
-        });
-
-        // Sidebar logic
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-            });
         });
     </script>
 </body>

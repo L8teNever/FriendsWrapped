@@ -251,6 +251,46 @@ def generate_link(user_id):
     token = user.generate_magic_token()
     return redirect(url_for('admin_dashboard'))
 
+# --- Media Library API ---
+@app.route('/admin/media')
+@admin_required
+def list_media():
+    upload_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+    files = []
+    if os.path.exists(upload_path):
+        for f in os.listdir(upload_path):
+            if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg')):
+                url = url_for('static', filename=f'uploads/{f}')
+                files.append({'name': f, 'url': url})
+    return {"files": files}
+
+@app.route('/admin/media/upload', methods=['POST'])
+@admin_required
+def upload_media():
+    if 'file' not in request.files:
+        return {"error": "No file"}, 400
+    file = request.files['file']
+    if file and file.filename != '':
+        filename = secure_filename(f"lib_{secrets.token_hex(4)}_{file.filename}")
+        file.save(os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename))
+        url = url_for('static', filename=f'uploads/{filename}')
+        return {"success": True, "url": url, "name": filename}
+    return {"error": "Upload failed"}, 400
+
+@app.route('/admin/media/delete', methods=['POST'])
+@admin_required
+def delete_media():
+    data = request.json
+    filename = data.get('filename')
+    if not filename:
+        return {"error": "No filename"}, 400
+    
+    file_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], secure_filename(filename))
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return {"success": True}
+    return {"error": "File not found"}, 404
+
 # Application bootstrapping
 if __name__ == '__main__':
     init_db()
