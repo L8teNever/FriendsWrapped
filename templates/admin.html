@@ -145,8 +145,7 @@
             ('🎂 Geburtstag', 'gift', 'show_birthday', ['birthday_title', 'birthday_age', 'birthday_text']),
             ('📊 Highlights & Zahlen', 'bar-chart-2', 'show_stats', ['stats_title', 'years_count', 'days_count',
             'stats_subtitle', 'chat_stats_title', 'chat_stats_config']),
-            ('💬 WhatsApp Vibes', 'message-circle', 'show_whatsapp', ['wa_title', 'wa_msg_1', 'wa_msg_2', 'wa_msg_3',
-            'wa_msg_4', 'wa_msg_5']),
+            ('📈 WhatsApp Vibes', 'message-circle', 'show_whatsapp', ['wa_title', 'wa_messages']),
             ('📸 Damals & Heute', 'camera', 'show_development', ['img_then', 'img_now']),
             ('🎵 Musik & Highlights', 'music', 'show_music', ['song_title', 'song_artist', 'song_cover',
             'highlight_label']),
@@ -232,6 +231,16 @@
                                     <i data-lucide="plus-circle" class="w-5 h-5"></i> Element hinzufügen
                                 </button>
                                 <textarea name="config_{{ config.key }}" id="stats-hidden-input"
+                                    class="hidden">{{ config.value }}</textarea>
+                            </div>
+                            {% elif config.key == 'wa_messages' %}
+                            <div id="wa-builder-container" class="space-y-4">
+                                <div id="wa-list" class="space-y-3"></div>
+                                <button type="button" onclick="addWaRow()"
+                                    class="w-full py-3 bg-white border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 font-bold text-sm hover:border-violet-300 hover:text-violet-500 transition flex items-center justify-center gap-2">
+                                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Nachricht hinzufügen
+                                </button>
+                                <textarea name="config_{{ config.key }}" id="wa-hidden-input"
                                     class="hidden">{{ config.value }}</textarea>
                             </div>
                             {% else %}
@@ -408,10 +417,46 @@
             lucide.createIcons();
         }
 
+        // WhatsApp Builder JS
+        function updateWaInput() {
+            const lines = [];
+            document.querySelectorAll('.wa-builder-input').forEach(input => {
+                if (input.value.trim()) lines.push(input.value.trim());
+            });
+            document.getElementById('wa-hidden-input').value = lines.join('\n');
+        }
+
+        function addWaRow(val = '') {
+            const container = document.getElementById('wa-list');
+            if (!container) return;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex items-center gap-3 p-4 bg-[#f1f9f6] border border-emerald-100 rounded-2xl shadow-sm';
+            wrapper.innerHTML = `
+                <div class="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <input type="text" value="${val}" class="wa-builder-input flex-1 bg-transparent text-sm font-bold text-emerald-900 outline-none" placeholder="Deine Nachricht..." oninput="updateWaInput()">
+                <button type="button" onclick="this.parentElement.remove(); updateWaInput();" class="text-emerald-300 hover:text-red-500 transition">
+                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                </button>
+            `;
+            container.appendChild(wrapper);
+            lucide.createIcons();
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            // Stats init
             const stats = parseStats();
-            if (stats.length === 0) addStatRow();
-            else stats.forEach(s => addStatRow(s));
+            if (stats.length === 0) {
+                const statsList = document.getElementById('stats-list');
+                if (statsList) addStatRow();
+            } else stats.forEach(s => addStatRow(s));
+
+            // WhatsApp init
+            const waInput = document.getElementById('wa-hidden-input');
+            if (waInput) {
+                const msgs = waInput.value.split('\n').filter(x => x.trim());
+                if (msgs.length === 0) addWaRow();
+                else msgs.forEach(m => addWaRow(m));
+            }
         });
 
         // Sidebar logic

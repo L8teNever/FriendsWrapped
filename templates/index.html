@@ -51,6 +51,14 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            padding: 80px 0;
+            /* Space for dividers */
+        }
+
+        @media (min-width: 768px) {
+            section {
+                padding: 120px 0;
+            }
         }
 
         /* Animated Background Blobs */
@@ -534,11 +542,11 @@
             config.get('birthday_age', '19') }}</div>
         <div class="blob w-72 h-72 bg-pink-300 top-10 right-10"></div>
         <div class="blob w-96 h-96 bg-purple-600 bottom-0 left-[-10%]" style="animation-delay: -8s"></div>
-        <div class="relative z-10 text-center px-6 reveal">
+        <div class="relative z-10 text-center px-6 reveal py-12">
             <h2 class="text-4xl md:text-7xl font-black mb-6 italic uppercase tracking-tighter stagger-1 text-white">
                 {{ config.get('birthday_title', 'HAPPY BIRTHDAY!') }}</h2>
             <div
-                class="inline-block px-10 py-4 bg-white/20 backdrop-blur-xl rounded-full mb-8 stagger-2 border border-white/30 text-white">
+                class="inline-block px-10 py-4 bg-white/20 backdrop-blur-xl rounded-full mb-6 md:mb-8 stagger-2 border border-white/30 text-white">
                 <span class="text-3xl font-black">{{ config.get('birthday_age', '19') }}.</span>
             </div>
             <p class="text-lg md:text-2xl font-bold opacity-80 max-w-xl mx-auto stagger-3 leading-relaxed text-white">
@@ -560,7 +568,7 @@
     <section class="wrapped-gradient-stats gradient-animate" data-index="2">
         <div class="bg-floating-text" style="right: -20%; bottom: 0%;">STATS</div>
         <div class="blob w-96 h-96 bg-white/10 left-[-10%] top-10"></div>
-        <div class="relative z-10 reveal text-center px-6">
+        <div class="relative z-10 reveal text-center px-6 py-12">
             <h2 class="text-5xl md:text-9xl font-black mb-4 tracking-tighter italic uppercase stagger-1 text-white">
                 {{ config.get('stats_title', 'UNSERE ZEIT') }}</h2>
             <div class="flex items-center justify-center gap-4 md:gap-8 mb-8 stagger-2 text-white">
@@ -594,22 +602,23 @@
     <section class="wrapped-gradient-chat gradient-animate" data-index="3">
         <div class="bg-floating-text" style="left: -10%; top: 20%;">CHAT</div>
         <div class="blob w-72 h-72 bg-blue-300 top-10 left-10"></div>
-        <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl text-white">
+        <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl text-white py-12">
             <h2
-                class="text-3xl md:text-5xl font-black mb-12 italic uppercase tracking-tighter stagger-1 flex items-center justify-center gap-4">
+                class="text-3xl md:text-5xl font-black mb-8 md:mb-12 italic uppercase tracking-tighter stagger-1 flex items-center justify-center gap-4">
                 {{ config.get('chat_stats_title', 'Einfach unzertrennlich') }}
             </h2>
-            <div class="flex flex-wrap justify-center gap-6 stagger-2">
+            <div class="flex flex-wrap justify-center gap-4 md:gap-6 stagger-2">
                 {% for line in config.get('chat_stats_config', '').split('\n') %}
                 {% if line.strip() %}
                 {% set parts = line.split('|') %}
                 {% if parts|length >= 3 %}
-                <div class="glass p-8 hover:scale-105 transition-transform w-full md:w-72">
-                    <i data-lucide="{{ parts[0].strip() }}" class="w-8 h-8 mb-4 mx-auto opacity-50"></i>
-                    <h3 class="text-4xl font-black mb-2">
+                <div class="glass p-6 md:p-8 hover:scale-105 transition-transform w-[calc(50%-1rem)] md:w-72">
+                    <i data-lucide="{{ parts[0].strip() }}"
+                        class="w-6 h-6 md:w-8 md:h-8 mb-3 md:mb-4 mx-auto opacity-50"></i>
+                    <h3 class="text-3xl md:text-4xl font-black mb-1 md:mb-2">
                         <span class="count-up" data-target="{{ parts[1].strip() }}">0</span>
                     </h3>
-                    <p class="text-[10px] font-black uppercase opacity-60">{{ parts[2].strip() }}</p>
+                    <p class="text-[9px] md:text-[10px] font-black uppercase opacity-60">{{ parts[2].strip() }}</p>
                 </div>
                 {% endif %}
                 {% endif %}
@@ -630,8 +639,8 @@
     {% if config.get('show_whatsapp', 'true') == 'true' %}
     <section class="bg-[#111b21] overflow-hidden" data-index="4">
         <div class="blob w-96 h-96 bg-emerald-500/10 right-[-10%] top-[-10%]"></div>
-        <div class="relative z-10 w-full max-w-lg px-6 reveal">
-            <div class="mb-12 text-center stagger-1">
+        <div class="relative z-10 w-full max-w-lg px-6 reveal py-12">
+            <div class="mb-8 md:mb-12 text-center stagger-1">
                 <div class="inline-block p-1 bg-white/10 rounded-2xl mb-4 backdrop-blur-xl border border-white/20">
                     <div class="px-4 py-2 bg-emerald-500/20 rounded-xl text-emerald-400 font-bold text-xs uppercase">
                         WhatsApp Wrapped</div>
@@ -641,10 +650,8 @@
             </div>
 
             <div class="space-y-4">
-                {% set wa_msgs = [config.get('wa_msg_1'), config.get('wa_msg_2'), config.get('wa_msg_3'),
-                config.get('wa_msg_4'), config.get('wa_msg_5')] %}
-                {% for msg in wa_msgs %}
-                {% if msg %}
+                {% for msg in config.get('wa_messages', '').split('\n') %}
+                {% if msg.strip() %}
                 <div class="wa-card bg-[#202c33] p-6 rounded-[2rem] border border-white/5 shadow-2xl stagger-{{ loop.index + 1 }} hover:bg-[#2a3942] transition-colors group flex items-start gap-4"
                     style="transform: translateX({{ '30px' if loop.index % 2 == 0 else '-30px' }})">
                     <div class="flex-1">
@@ -853,7 +860,7 @@
     <section class="wrapped-gradient-future gradient-animate" data-index="9">
         <div class="bg-floating-text" style="right: -10%; top: 10%;">GOALS</div>
         <div class="blob w-72 h-72 bg-blue-400 left-[-5%] top-[-5%]"></div>
-        <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl stagger-1 text-white">
+        <div class="relative z-10 text-center px-6 reveal w-full max-w-4xl stagger-1 text-white py-12">
             <h2
                 class="text-5xl md:text-8xl font-black italic uppercase mb-12 tracking-tighter leading-none text-white text-white">
                 {{ config.get('bucket_title', 'Was wir noch erleben') }}</h2>
@@ -882,7 +889,7 @@
         </div>
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#000000" fill-opacity="1"
+                <path fill="#09090b" fill-opacity="1"
                     d="M0,128L48,144C96,160,192,192,288,208C384,224,480,224,576,213.3C672,203,768,181,864,186.7C960,192,1056,224,1152,213.3C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
                 </path>
             </svg>
@@ -930,7 +937,7 @@
     <section class="wrapped-gradient-profile gradient-animate" data-index="11" id="profile-reveal-section">
         <div class="bg-floating-text" style="right: -10%; top: 20%;">ULTIMATE</div>
         <div class="blob w-96 h-96 bg-white/20 top-0 right-[-10%]"></div>
-        <div class="relative z-10 text-center px-6 reveal w-full max-w-lg">
+        <div class="relative z-10 text-center px-6 reveal w-full max-w-lg py-12">
             <div id="analyzing-state" class="mb-14 transition-opacity duration-500">
                 <div
                     class="w-24 h-24 border-8 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-8 shadow-2xl">
@@ -960,9 +967,9 @@
                 </div>
             </div>
         </div>
-        <div class="curve-divider curve-bottom">
+        <div class="curve-divider curve-bottom text-white">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#000000" fill-opacity="1"
+                <path fill="#f093fb" fill-opacity="1"
                     d="M0,256L60,240C120,224,240,192,360,197.3C480,203,600,245,720,245.3C840,245,960,203,1080,181.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
                 </path>
             </svg>
