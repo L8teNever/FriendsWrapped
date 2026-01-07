@@ -108,6 +108,44 @@
             }
         }
 
+        @keyframes float-around {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(30px, -50px) rotate(10deg);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) rotate(-10deg);
+            }
+
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+        }
+
+        .floating-number {
+            position: absolute;
+            font-weight: 900;
+            color: white;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 1;
+            filter: blur(2px);
+            animation: float-around 15s infinite ease-in-out;
+        }
+
+        .birthday-stagger {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+
+        section.active .birthday-stagger {
+            opacity: 0.15;
+        }
+
         /* Gradient Shift Animation */
         .gradient-animate {
             background-size: 200% 200%;
@@ -177,116 +215,41 @@
             transform: translateY(0) scale(1);
         }
 
-        /* Staggered Children Delay */
-        .stagger-1 {
-            transition-delay: 0.2s !important;
+        /* Staggered Children Delay (Generated up to 20 levels) */
+            {
+            % for i in range(1, 21) %
         }
 
-        .stagger-2 {
-            transition-delay: 0.4s !important;
+        .stagger- {
+                {
+                i
+            }
         }
 
-        .stagger-3 {
-            transition-delay: 0.6s !important;
+            {
+            transition-delay: {
+                    {
+                    0.1 * i
+                }
+            }
+
+            s !important;
         }
 
-        .stagger-4 {
-            transition-delay: 0.8s !important;
+            {
+            % endfor %
         }
 
-        .trip-bg-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            background-size: cover;
-            background-position: center;
-            filter: brightness(0.3) saturate(1.2);
-            transition: transform 5s ease-out;
-            transform: scale(1.2);
-        }
-
-        section.active .trip-bg-overlay {
-            transform: scale(1);
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-        }
-
-        .curve-divider {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            line-height: 0;
-            z-index: 30;
-        }
-
-        .curve-bottom {
-            bottom: -1px;
-        }
-
-        .curve-top {
-            top: -1px;
-            transform: rotate(180deg);
-        }
-
-        /* Progress Bars */
-        .progress-container {
-            position: fixed;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 4px;
-            width: 92%;
-            max-width: 450px;
-            z-index: 100;
-        }
-
-        .progress-bar {
-            height: 3px;
-            background: rgba(255, 255, 255, 0.25);
-            flex-grow: 1;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #fff;
-            width: 0%;
-            transition: width 0.5s ease-out;
-        }
-
-        /* WhatsApp Cards Animation */
-        .wa-card {
+        /* General Reveal Items for Lists */
+        .reveal-item {
             opacity: 0;
-            transition: all 0.8s cubic-bezier(0.17, 0.55, 0.55, 1);
+            transform: translateY(30px) scale(0.9);
+            transition: all 0.7s cubic-bezier(0.17, 0.55, 0.55, 1);
         }
 
-        .reveal.active .wa-card {
+        .reveal.active .reveal-item {
             opacity: 1;
-            transform: translateX(0) !important;
-        }
-
-        .stagger-5 {
-            transition-delay: 1.0s !important;
-        }
-
-        .stagger-6 {
-            transition-delay: 1.2s !important;
-        }
-
-        .stagger-7 {
-            transition-delay: 1.4s !important;
-        }
-
-        .stagger-8 {
-            transition-delay: 1.6s !important;
+            transform: translateY(0) scale(1);
         }
 
         .swipe-container {
@@ -512,6 +475,36 @@
         </div>
     </div>
 
+    <!-- Dynamic Transition Helper -->
+    {% set ns = namespace(found=false, next_color='#f093fb') %}
+    {% set section_order = [
+    ('birthday', config.get('show_birthday', 'true') == 'true', '#8e2de2'),
+    ('stats', config.get('show_stats', 'true') == 'true', '#ff416c'),
+    ('chat', config.get('show_whatsapp', 'true') == 'true', '#00b4db'),
+    ('wa_cards', config.get('show_whatsapp', 'true') == 'true', '#111b21'),
+    ('thennow', config.get('show_development', 'true') == 'true', '#2af598'),
+    ('chaos', config.get('show_chaos', 'true') == 'true', '#FFD200'),
+    ('music', config.get('show_music', 'true') == 'true', '#4facfe'),
+    ('travel', config.get('show_highlights', 'true') == 'true', '#000000'),
+    ('bucket', config.get('show_bucketlist', 'true') == 'true', '#667eea'),
+    ('wall', config.get('show_postits', 'true') == 'true', '#09090b'),
+    ('profile', config.get('show_character', 'true') == 'true', '#f953c6'),
+    ('finale', true, '#f093fb')
+    ] %}
+
+    {% macro get_next_color(current_id) %}
+    {% set inner_ns = namespace(found=false, color='#000000', done=false) %}
+    {% for sid, show, color in section_order %}
+    {% if sid == current_id %}
+    {% set inner_ns.found = true %}
+    {% elif inner_ns.found and show and not inner_ns.done %}
+    {% set inner_ns.color = color %}
+    {% set inner_ns.done = true %}
+    {% endif %}
+    {% endfor %}
+    {{ inner_ns.color }}
+    {% endmacro %}
+
     <!-- 1. Intro -->
     <section class="wrapped-gradient-1" data-index="0">
         <div class="blob w-64 h-64 bg-green-400 left-[-10%] top-[-10%]"></div>
@@ -529,17 +522,28 @@
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
                 class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C240 80 1200 80 1440 0V120H0V0Z" fill="#8e2de2" />
+                <path d="M0 0C240 80 1200 80 1440 0V120H0V0Z" fill="{{ get_next_color('intro')|trim }}" />
             </svg>
         </div>
     </section>
 
-    <!-- 2. Geburtstag -->
     <!-- 2. Happy Birthday -->
     {% if config.get('show_birthday', 'true') == 'true' %}
     <section class="wrapped-gradient-birthday" data-index="1">
         <div class="bg-floating-text opacity-5 select-none stagger-1" style="left: -10%; top: 10%;">{{
             config.get('birthday_age', '19') }}</div>
+
+        <!-- Floating BG Numbers -->
+        {% set age = config.get('birthday_age', '19') %}
+        <div class="absolute inset-0 overflow-hidden pointer-events-none birthday-stagger">
+            <div class="floating-number text-[20rem] top-[-10%] left-[5%]" style="animation-delay: 0s;">{{ age }}</div>
+            <div class="floating-number text-[15rem] bottom-[10%] right-[10%]" style="animation-delay: -3s;">{{ age }}
+            </div>
+            <div class="floating-number text-[10rem] top-[40%] left-[60%]" style="animation-delay: -7s;">{{ age }}</div>
+            <div class="floating-number text-[12rem] bottom-[-5%] left-[20%]" style="animation-delay: -11s;">{{ age }}
+            </div>
+        </div>
+
         <div class="blob w-72 h-72 bg-pink-300 top-10 right-10"></div>
         <div class="blob w-96 h-96 bg-purple-600 bottom-0 left-[-10%]" style="animation-delay: -8s"></div>
         <div class="relative z-10 text-center px-6 reveal py-12">
@@ -555,7 +559,7 @@
         </div>
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#ff416c" fill-opacity="1"
+                <path fill="{{ get_next_color('birthday')|trim }}" fill-opacity="1"
                     d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,165.3C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
                 </path>
             </svg>
@@ -589,7 +593,7 @@
         </div>
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#00b4db" fill-opacity="1"
+                <path fill="{{ get_next_color('stats')|trim }}" fill-opacity="1"
                     d="M0,192L60,197.3C120,203,240,213,360,192C480,171,600,117,720,117.3C840,117,960,171,1080,186.7C1200,203,1320,181,1380,170.7L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
                 </path>
             </svg>
@@ -627,7 +631,7 @@
         </div>
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#111b21" fill-opacity="1"
+                <path fill="{{ get_next_color('chat')|trim }}" fill-opacity="1"
                     d="M0,64L48,80C96,96,192,128,288,128C384,128,480,96,576,106.7C672,117,768,171,864,176C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
                 </path>
             </svg>
@@ -672,7 +676,7 @@
         </div>
         <div class="curve-divider curve-bottom text-white">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#2af598" fill-opacity="1"
+                <path fill="{{ get_next_color('wa_cards')|trim }}" fill-opacity="1"
                     d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,213.3C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
                 </path>
             </svg>
@@ -729,7 +733,7 @@
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
                 class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C360 100 1080 100 1440 0V120H0V0Z" fill="#FFD200" />
+                <path d="M0 0C360 100 1080 100 1440 0V120H0V0Z" fill="{{ get_next_color('thennow')|trim }}" />
             </svg>
         </div>
     </section>
@@ -796,7 +800,7 @@
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
                 class="w-full h-[60px] md:h-[120px]">
-                <path d="M0 0C360 120 1080 120 1440 0V120H0V0Z" fill="#4facfe" />
+                <path d="M0 0C360 120 1080 120 1440 0V120H0V0Z" fill="{{ get_next_color('chaos')|trim }}" />
             </svg>
         </div>
     </section>
@@ -828,7 +832,7 @@
         </div>
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#000000" fill-opacity="1"
+                <path fill="{{ get_next_color('music')|trim }}" fill-opacity="1"
                     d="M0,256L60,240C120,224,240,192,360,197.3C480,203,600,245,720,245.3C840,245,960,203,1080,181.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
                 </path>
             </svg>
@@ -870,7 +874,7 @@
         </div>
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#667eea" fill-opacity="1"
+                <path fill="{{ get_next_color('travel')|trim }}" fill-opacity="1"
                     d="M0,160L48,144C96,128,192,96,288,106.7C384,117,480,171,576,186.7C672,203,768,181,864,154.7C960,128,1056,96,1152,90.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
                 </path>
             </svg>
@@ -888,31 +892,28 @@
                 class="text-5xl md:text-8xl font-black italic uppercase mb-12 tracking-tighter leading-none text-white text-white">
                 {{ config.get('bucket_title', 'Was wir noch erleben') }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for item in config.get('bucket_items', '').split('\n') %}
+                {% if item.strip() %}
+                {% set parts = item.split('|') %}
                 <div
-                    class="glass p-8 flex items-center gap-6 text-left stagger-2 group hover:bg-white/20 transition-colors">
-                    <div class="bg-white/20 p-5 rounded-[2rem] group-hover:rotate-12 transition-transform"><i
-                            data-lucide="map" class="w-8 h-8 text-white"></i>
+                    class="glass p-8 flex items-center gap-6 text-left reveal-item stagger-{{ loop.index + 1 }} group hover:bg-white/20 transition-colors">
+                    <div class="bg-white/20 p-5 rounded-[2rem] group-hover:rotate-12 transition-transform shadow-xl">
+                        <i data-lucide="{{ parts[0] if parts|length > 0 else 'star' }}" class="w-8 h-8 text-white"></i>
                     </div>
                     <div>
-                        <p class="text-[10px] font-black opacity-50 uppercase text-white tracking-widest">Ziel #1</p>
-                        <p class="text-2xl font-black italic text-white">Nächster Trip</p>
+                        <p class="text-[10px] font-black opacity-50 uppercase text-white tracking-widest">{{ parts[1] if
+                            parts|length > 1 else 'Ziel' }}</p>
+                        <p class="text-2xl font-black italic text-white">{{ parts[2] if parts|length > 2 else 'Bucket
+                            List Item' }}</p>
                     </div>
                 </div>
-                <div
-                    class="glass p-8 flex items-center gap-6 text-left stagger-3 group hover:bg-white/20 transition-colors">
-                    <div class="bg-white/20 p-5 rounded-[2rem] group-hover:rotate-12 transition-transform"><i
-                            data-lucide="heart" class="w-8 h-8 text-white"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-black opacity-50 uppercase text-white tracking-widest">Motto</p>
-                        <p class="text-2xl font-black italic text-white">Immer da sein</p>
-                    </div>
-                </div>
+                {% endif %}
+                {% endfor %}
             </div>
         </div>
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#09090b" fill-opacity="1"
+                <path fill="{{ get_next_color('bucket')|trim }}" fill-opacity="1"
                     d="M0,128L48,144C96,160,192,192,288,208C384,224,480,224,576,213.3C672,203,768,181,864,186.7C960,192,1056,224,1152,213.3C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
                 </path>
             </svg>
@@ -928,11 +929,11 @@
         <div class="relative z-10 w-full max-w-5xl px-6 py-20 text-center reveal">
             <h2 class="text-3xl md:text-6xl font-black mb-16 italic uppercase tracking-tighter text-white stagger-1">
                 {{ config.get('postits_title', 'Was ich an dir schätze') }}</h2>
-            <div class="flex flex-wrap justify-center gap-10 stagger-2">
+            <div class="flex flex-wrap justify-center gap-10">
                 {% set colors = ['postit-yellow', 'postit-pink', 'postit-blue', 'postit-green'] %}
                 {% for note in config.get('postits_content', '').split(',') %}
                 {% if note %}
-                <div class="postit {{ colors[loop.index0 % 4] }} shadow-2xl cursor-pointer hover:scale-110 active:scale-95 transition-all"
+                <div class="postit {{ colors[loop.index0 % 4] }} shadow-2xl cursor-pointer hover:scale-110 active:scale-95 transition-all reveal-item stagger-{{ loop.index + 1 }}"
                     onclick="this.classList.add('wiggle-animation'); setTimeout(() => this.classList.remove('wiggle-animation'), 500)">
                     <p class="text-black font-black italic text-lg md:text-xl leading-tight select-none">{{
                         note.strip() }}</p>
@@ -947,7 +948,7 @@
         </div>
         <div class="curve-divider curve-bottom">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#f953c6" fill-opacity="1"
+                <path fill="{{ get_next_color('wall')|trim }}" fill-opacity="1"
                     d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,197.3C672,192,768,128,864,128C960,128,1056,192,1152,208C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
                 </path>
             </svg>
@@ -992,7 +993,7 @@
         </div>
         <div class="curve-divider curve-bottom text-white">
             <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-full h-24 md:h-40">
-                <path fill="#f093fb" fill-opacity="1"
+                <path fill="{{ get_next_color('profile')|trim }}" fill-opacity="1"
                     d="M0,256L60,240C120,224,240,192,360,197.3C480,203,600,245,720,245.3C840,245,960,203,1080,181.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
                 </path>
             </svg>

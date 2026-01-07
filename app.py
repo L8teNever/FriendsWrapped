@@ -104,6 +104,8 @@ def init_db():
             'gallery_paris': 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=600,https://images.unsplash.com/photo-1549144511-f099e773c147?w=600,https://images.unsplash.com/photo-1503917988258-f87a78e3c995?w=600,https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600',
             'gallery_memes': 'https://images.unsplash.com/photo-1531928351158-2f7360b94b51?w=600,https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=600,https://images.unsplash.com/photo-1543332164-6e82f355badc?w=600',
             'bucket_title': 'Was wir noch erleben',
+            'bucket_items': 'map|Ziel #1|Nächster Trip\nheart|Motto|Immer da sein\ncoffee|Coffee Dates|Jeden Sonntag\nplane|World Tour|Irgendwann mal',
+            'show_bucketlist': 'true',
             'analyzing_text': 'Analysiere Freundschaft...',
             'character_type_label': 'Charakter-Typ',
             'character_type': 'Elite-Bestie',
