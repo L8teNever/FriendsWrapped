@@ -217,7 +217,7 @@
             transform: translateY(0) scale(1);
         }
 
-        /* Staggered Children Delay (Generated up to 20 levels) */
+        /* Staggered Children Delay */
             {
             % for i in range(1, 21) %
         }
@@ -418,6 +418,16 @@
             border-color: rgba(255, 255, 255, 0.2);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
             transform: translateY(-10px) scale(1.02);
+        }
+
+        .trip-bg-overlay {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4;
+            filter: grayscale(100%) contrast(120%);
+            z-index: 0;
         }
 
         /* Section Dividers */
@@ -736,12 +746,15 @@
     <section class="bg-[#111b21] overflow-hidden" data-index="4">
         <div class="blob w-96 h-96 bg-emerald-500/10 right-[-10%] top-[-10%]"></div>
         <div class="relative z-10 w-full max-w-lg px-6 reveal py-12">
-            <div class="mb-8 md:mb-12 text-center stagger-1">
-                <div class="inline-block p-1 bg-white/10 rounded-2xl mb-4 backdrop-blur-xl border border-white/20">
-                    <div class="px-4 py-2 bg-emerald-500/20 rounded-xl text-emerald-400 font-bold text-xs uppercase">
-                        WhatsApp Wrapped</div>
+            <div class="mb-10 md:mb-16 text-center stagger-1">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 backdrop-blur-xl border border-emerald-500/20 rounded-full mb-6">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">WhatsApp
+                        Wrapped</span>
                 </div>
-                <h2 class="text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-white">
+                <h2
+                    class="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-[0.9] text-white break-words px-4">
                     {{ config.get('wa_title', 'DEINE LEGENDÄREN NACHRICHTEN') }}</h2>
             </div>
 

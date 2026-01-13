@@ -418,8 +418,8 @@
                             <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Dein Magic
                                 Link</label>
                             <div class="bg-indigo-50 border border-indigo-100/50 p-4 rounded-2xl text-xs font-semibold text-indigo-600 break-all cursor-pointer hover:bg-indigo-100 transition relative overflow-hidden group/link"
-                                onclick="navigator.clipboard.writeText(this.innerText.trim()); alert('Link kopiert!')">
-                                {{ host_url }}/magic/{{ user.magic_token }}
+                                onclick="const link = this.querySelector('.link-url').innerText.trim(); navigator.clipboard.writeText(link); alert('Link kopiert!')">
+                                <span class="link-url">{{ host_url }}/magic/{{ user.magic_token }}</span>
                                 <div
                                     class="absolute inset-0 bg-indigo-600 opacity-0 group-hover/link:opacity-95 flex items-center justify-center transition rounded-2xl text-white font-bold text-sm">
                                     <i data-lucide="copy" class="w-4 h-4 mr-2"></i> Kopieren
