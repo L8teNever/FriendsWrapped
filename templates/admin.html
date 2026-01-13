@@ -407,9 +407,21 @@
                             </div>
                             <div>
                                 <h4 class="text-lg font-bold text-slate-800">{{ user.username }}</h4>
-                                <span
-                                    class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-widest">{{
-                                    user.role }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-widest">{{
+                                        user.role }}</span>
+                                    {% if user.role != 'admin' %}
+                                    <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST"
+                                        onsubmit="return confirm('Benutzer wirklich löschen? Der Magic Link wird sofort ungültig.')"
+                                        class="inline">
+                                        <button type="submit"
+                                            class="text-slate-300 hover:text-red-500 transition-colors p-1">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
 

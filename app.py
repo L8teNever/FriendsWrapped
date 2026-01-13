@@ -253,6 +253,18 @@ def generate_link(user_id):
     token = user.generate_magic_token()
     return redirect(url_for('admin_dashboard'))
 
+@app.route('/admin/users/delete/<int:user_id>', methods=['POST'])
+@admin_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.role == 'admin':
+        flash('Admin-Accounts können nicht gelöscht werden!')
+    else:
+        db.session.delete(user)
+        db.session.commit()
+        flash(f'Benutzer {user.username} wurde entfernt.')
+    return redirect(url_for('admin_dashboard'))
+
 # --- Media Library API ---
 @app.route('/admin/media')
 @admin_required
